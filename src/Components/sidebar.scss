@@ -1,0 +1,22 @@
+$sidebar-collapsed-width: 0px !default;
+$sidebar-bg-color: #f4f5f7 !default;
+$highlight-color: #000000 !default;
+$breakpoint-xs: 100px !default;
+
+@import '~react-pro-sidebar/dist/scss/styles.scss';
+
+
+
+.pro-sidebar .pro-menu .pro-menu-item > .pro-inner-item {
+	padding: 0px;
+}
+
+
+.g6-tooltip {
+	padding: 10px 6px;
+	color: rgb(253, 253, 253);
+	background-color: rgba(0, 0, 0, 0.444);
+	// border: 1px solid #000000;
+	border-radius: 4px;
+  }
+

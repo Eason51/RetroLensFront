@@ -1,0 +1,235 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+div.tooltip {
+  color: rgb(255, 254, 254);
+  position: absolute;
+  /* text-align: center; */
+  /* width: 80px; */
+  /* height: 35px; */
+  padding: 2px;
+  font: 13px sans-serif;
+  background: rgb(71, 71, 71);
+  /* border: 1px solid black; */
+  pointer-events: auto;
+  border-radius: 2px;
+}
+
+/* div.tooltip:hover {
+  color: rgb(129, 127, 127);
+} */
+
+.tooltip-title {
+  font-size: 9px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.tooltip-author {
+  font-size: 8px;
+}
+
+.network-tooltip {
+  font-size: 8px;
+}
+
+.tooltip-doi {
+  color: rgb(172, 192, 246);
+  text-decoration: underline;
+}
+
+.tooltip-label {
+  font-weight: 800;
+}
+
+.layout {
+  background-color: #e9ecef;
+}
+
+#ascending,
+#descending {
+  cursor: pointer;
+}
+
+/* ::-webkit-scrollbar {
+  display: inline;
+} */
+
+.highlightRect {
+  stroke: orange;
+  stroke-width: 5px;
+}
+
+.root-node > circle {
+  opacity: 0;
+  fill: white;
+  stroke-width: 0;
+}
+
+.rd3t-leaf-node > circle,
+.rd3t-node > circle {
+  fill: rgb(216, 214, 214);
+  r: 35;
+  stroke-width: 0;
+}
+
+text.rd3t-label__title {
+  font-size: 50px;
+  fill: black;
+  stroke-width: 0;
+}
+
+path.root-path-class {
+  opacity: 0;
+  stroke-width: 0;
+  stroke: white;
+}
+
+.thumb-text {
+  background-color: rgb(255, 255, 255);
+  height: 15px;
+  line-height: 15px;
+  width: 26px;
+  text-align: center;
+  border-radius: 15%;
+  border-style: solid;
+  border-color: rgb(190, 189, 189);
+  border-width: 0.2px;
+  /* padding: 0.5px; */
+  margin-top: 2px;
+  margin-left: -5px;
+  /* cursor: grab; */
+  font-size: 8px;
+  z-index: 10;
+  /* padding: 1px; */
+}
+
+.mark {
+  font-size: 8px;
+  background: none;
+  margin-top: 13px;
+  margin-left: -4px;
+}
+
+.thumb-btn {
+  width: 15px;
+  height: 12px;
+  background-color: #dadada;
+  cursor: grab;
+}
+
+.example-thumb {
+  width: 15px;
+}
+
+.example-thumb.active {
+  outline: none;
+}
+
+.example-thumb.active > .thumb-text {
+  outline: none;
+  z-index: 999;
+}
+
+.example-thumb.active > .thumb-btn {
+  outline: none;
+  background-color: rgb(194, 194, 194);
+}
+
+.horizontal-slider {
+  height: 35px;
+  width: 100px;
+  float: right;
+  margin-right: 20px;
+  /* background-color: #87bace; */
+}
+/* 
+.node-circle {
+  fill: rgb(189, 189, 189);
+}
+
+.select-node {
+  fill: rgb(134, 134, 134);
+}
+
+.detail-node {
+  fill: rgb(134, 134, 134);
+  stroke: orange;
+  stroke-width: 2px;
+}
+
+.node-text {
+  font-size: 13px;
+}
+
+.link {
+  fill: none;
+  stroke: rgb(146, 146, 146);
+  stroke-width: 1px;
+}
+
+.root-link {
+  opacity: 0;
+  fill: none;
+  stroke: rgb(146, 146, 146);
+  stroke-width: 1px;
+} */
+
+/* .root-node > circle {
+  fill: rgb(146, 146, 146);
+  opacity: 0;
+} */
+
+.tree-node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.highlight-node circle {
+  fill: rgb(255, 245, 153);
+  stroke: orange;
+  stroke-width: 1.5px;
+}
+
+.tree-node,
+.highlight-node {
+  font: 10px sans-serif;
+}
+
+.hidden-node,
+.hidden-link {
+  opacity: 0;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.overview-hover {
+  font-size: 10;
+  font-weight: normal;
+}
+
+.relect-placeholder {
+  font-size: 11px;
+}
+
+.relect-option {
+  font-size: 13px;
+}
+
+
