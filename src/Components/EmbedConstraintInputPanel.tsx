@@ -1,29 +1,12 @@
 import React from 'react';
-import { ConstraintInput } from "./ConstraintInput";
+import { ConstraintInput } from '../RetroLens_Components/ConstraintInput';
 
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Slider from '@mui/material/Slider';
-import MuiInput from '@mui/material/Input';
-import VolumeUp from '@mui/icons-material/VolumeUp';
-import TextareaAutosize from '@mui/material/TextareaAutosize';
+
 import TextField from '@mui/material/TextField';
+import { propTypes } from 'react-bootstrap/esm/Image';
 
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import Stack from '@mui/material/Stack';
-
-import { Routes, Route, Link } from "react-router-dom";
-import MainBlock from './MainBlock';
-
-import { useContext } from 'react';
-import GlobalContext from '../Context/context';
-// @ts-ignore
-import Select from 'react-select';
-import { Col } from 'react-bootstrap';
 
 
 const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
@@ -53,23 +36,31 @@ const Input = styled('input')({
 	display: 'none',
 });
 
-class ConstraintInputPanel extends
+class EmbedConstraintInputPanel extends
 	React.Component<any, ConstraintInputPanelState> {
 
-	constructor(props: {}) {
+	constructor(props: any) {
 		super(props);
 
 		this.state = {
-			price: 0,
-			mssr: 3,
-			excludeSubstructure: null,
-			excludeSmiles: null,
+			price: ("price" in props.currentConstraints && props.currentConstraints.price !== 0) ? 
+				props.currentConstraints.price : 0,
+			mssr: ("mssr" in props.currentConstraints && props.currentConstraints.mssr) ?
+				props.currentConstraints.mssr : 3,
+			excludeSubstructure: ("excludeSubstructure" in props.currentConstraints
+				&& props.currentConstraints.excludeSubstructure) ? 
+				props.currentConstraints.excludeSubstructure : null,
+			excludeSmiles: ("excludeSmiles" in props.currentConstraints
+				&& props.currentConstraints.excludeSmiles) ?
+				props.currentConstraints.excludeSmiles : null,
 
 			isAll: false,
-			isPrice: false,
-			isStep: false,
-			isSubstructure: false,
-			isMolecule: false,
+			isPrice: "price" in props.currentConstraints && props.currentConstraints.price !== 0,
+			isStep: "mssr" in props.currentConstraints && props.currentConstraints.mssr,
+			isSubstructure: "excludeSubstructure" in props.currentConstraints
+				&& props.currentConstraints.excludeSubstructure,
+			isMolecule: "excludeSmiles" in props.currentConstraints
+				&& props.currentConstraints.excludeSmiles,
 		}
 
 		this.constraintInputCallback = this.constraintInputCallback.bind(this);
@@ -163,13 +154,15 @@ class ConstraintInputPanel extends
 
 	render() {
 
+		const currentConstraints = this.props.currentConstraints;
+
 		const PriceInput =
 			<Grid item>
 				<ConstraintInput
 					label={"Price Threshold for Molecules"}
 					lowerLimit={1}
 					higherLimit={1000}
-					defaultValue={1}
+					defaultValue={currentConstraints.price}
 					callback={this.constraintInputCallback}
 				/>
 			</Grid>
@@ -179,7 +172,7 @@ class ConstraintInputPanel extends
 				label={"Maximum Retrosynthetic Steps"}
 				lowerLimit={2}
 				higherLimit={15}
-				defaultValue={3}
+				defaultValue={currentConstraints.mssr}
 				callback={this.constraintInputCallback}
 			/>
 		</Grid>
@@ -190,6 +183,7 @@ class ConstraintInputPanel extends
 				id="outlined-read-only-input"
 				label="Exclude Substructure ( please input substructure smiles, seperate with '.' )"
 				onChange={(event) => this.handleTextFieldChange(event, "substructure")}
+				value={currentConstraints.excludeSubstructure}
 			/>
 		</Grid>
 
@@ -199,6 +193,7 @@ class ConstraintInputPanel extends
 				id="outlined-read-only-input"
 				label="Exclude Molecule ( please input molecule smiles, seperate with '.' )"
 				onChange={(event) => this.handleTextFieldChange(event, "smiles")}
+				value={currentConstraints.excludeSmiles}
 			/>
 		</Grid>
 
@@ -274,4 +269,4 @@ class ConstraintInputPanel extends
 
 
 
-export { ConstraintInputPanel }
+export { EmbedConstraintInputPanel }

@@ -19,8 +19,11 @@ function MainInterface() {
 	const [revisePromise, setRevisePromise] = useState({});
 	const [RetroTreeComponent, setRetroTreeComponent] = useState([]);
 	const [confidence, setConfidence] = useState(-1);
+	const [serverIp, setServerIp] = useState("http://192.168.1.8:5000/");
 
-	document.getElementById("drawBoardButton").addEventListener("click", setShow);
+	document.getElementById("drawBoardButton").addEventListener("click", ()=> {
+		setShow(true);
+	});
 
 
 
@@ -61,63 +64,83 @@ function MainInterface() {
 			targetMolecule, updateTargetMolecule,
 			constraints, updateConstraints, treeData, updateTreeData,
 			treeGraph, updateTreeGraph, revisePromise, updateRevisePromise,
-			confidence, updateConfidence
+			confidence, updateConfidence, serverIp
 		}}>
 			<div>
 				{/* <MainBlock /> */}
 				<TreeInterface RetroTreeComponent={RetroTreeComponent} />
 
 				<Modal id="modal" show={show} centered size="lg">
-					<div style={{ margin: "40px" }}>
+					<div style={{textAlign: "center", paddingTop: "10px", fontSize: "25px"}}>
+						Input Constraint for AI RetroSynthetic Route Planning
+					</div>
+
+					<div style={{ margin: "40px", marginTop: "20px" }}>
 						<ConstraintInputPanel updateConstraintFromPanel={updateConstraintFromPanel} />
 					</div>
 					<GlobalContext.Consumer>
 						{globalContext => {
 							return (
-								<Button onClick={
-									() => {
-										globalContext.updateTargetMolecule(
-											document.getElementById("smiles").innerHTML);
+								<div>
 
-										globalContext.updateConstraints(constraints);
-
+									<Button style={{ width: "50%" }}
+									onClick={() => {
 										setShow(false);
-										document.getElementById("drawBoard").style.zIndex = -1;
-										document.getElementById("main").style.zIndex = 2;
-										document.getElementById('drawBoard').style.visibility = 'hidden';
+									}}>
+										cancel
+									</Button>
 
-										fetch("http://192.168.31.118:5000/initialize", {
-											method: "POST",
-											headers: {
-												"Accept": "application/json",
-												"Content-Type": "application/json"
-											},
-											body: JSON.stringify({ smiles: document.getElementById("smiles").innerHTML })
-										}).then((response) =>
-											response.json())
-											.then((responseJson) => {
-												console.log("initialize_response", responseJson);
-												globalContext.updateTreeData(responseJson);
-												if("confidence" in responseJson)
-												{
-													globalContext.updateConfidence(responseJson.confidence);
-												}
-												// globalContext.updateTreeData(treeData2);
-												setRetroTreeComponent([<RetroTree />]);
-												document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
-											})
-											.catch(err => {
-												console.log("fetching error")
-												console.log(err);
-											});
+									<Button onClick={
+										() => {
+											globalContext.updateTargetMolecule(
+												document.getElementById("smiles").innerHTML);
 
-										// globalContext.updateTreeData(treeData2);
-										// setRetroTreeComponent([<RetroTree />]);
-										// document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
+											globalContext.updateConstraints(constraints);
+
+											// console.log("constraints", constraints);
+
+											setShow(false);
+											document.getElementById("drawBoard").style.zIndex = -1;
+											document.getElementById("main").style.zIndex = 2;
+											document.getElementById('drawBoard').style.visibility = 'hidden';
+
+											fetch(globalContext.serverIp.concat("initialize"), {
+												method: "POST",
+												headers: {
+													"Accept": "application/json",
+													"Content-Type": "application/json"
+												},
+												body: JSON.stringify({ smiles: document.getElementById("smiles").innerHTML })
+											}).then((response) =>
+												response.json())
+												.then((responseJson) => {
+													console.log("initialize_response", responseJson);
+													globalContext.updateTreeData(responseJson);
+													if ("confidence" in responseJson) {
+														globalContext.updateConfidence(responseJson.confidence);
+													}
+													// globalContext.updateTreeData(treeData2);
+													setRetroTreeComponent([<RetroTree constraints={constraints} />]);
+													document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
+												
+													document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
+												})
+												.catch(err => {
+													console.log("fetching error")
+													console.log(err);
+												});
+
+											// globalContext.updateTreeData(treeData2);
+											// setRetroTreeComponent([<RetroTree />]);
+											// document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
+										}
 									}
-								}>
-									submit
-								</Button>
+										style={{ width: "50%" }}
+									>
+										confirm
+									</Button>
+								</div>
+
 							);
 						}}
 					</GlobalContext.Consumer>

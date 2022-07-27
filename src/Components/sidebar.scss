@@ -2,21 +2,35 @@ $sidebar-collapsed-width: 0px !default;
 $sidebar-bg-color: #f4f5f7 !default;
 $highlight-color: #000000 !default;
 $breakpoint-xs: 100px !default;
+$sidebar-width: 350px !default;
 
 @import '~react-pro-sidebar/dist/scss/styles.scss';
 
 
 
-.pro-sidebar .pro-menu .pro-menu-item > .pro-inner-item {
+.pro-sidebar .pro-menu .pro-menu-item>.pro-inner-item {
 	padding: 0px;
 }
 
 
 .g6-tooltip {
-	padding: 10px 6px;
+	padding: 0px;
+	padding-left: 3px;
+	margin: 0px;
 	color: rgb(253, 253, 253);
-	background-color: rgba(0, 0, 0, 0.444);
+	background-color: rgba(0, 0, 0, 0.544);
 	// border: 1px solid #000000;
 	border-radius: 4px;
-  }
+	width:fit-content;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+	background-color: #e9ecef;
+}
+
+.true{
+	background-color: #e9ecef;
+}
+
+
 

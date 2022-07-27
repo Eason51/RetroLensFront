@@ -15,9 +15,10 @@ import { MainInterface } from "./Components/MainInterface";
 
 ReactDOM.render(
 
-	<React.StrictMode>
+	// <React.StrictMode>
+	<div>
 		<div>
-			<MainInterface/>
+			<MainInterface />
 		</div>
 		<div>
 			{/* <MainBlock /> */}
@@ -25,9 +26,8 @@ ReactDOM.render(
 		<div>
 			{/* <ConstraintInputPanel></ConstraintInputPanel> */}
 		</div>
-
-
-	</React.StrictMode>
+	</div>
+	// </React.StrictMode>
 
 	,
 	document.getElementById("main")

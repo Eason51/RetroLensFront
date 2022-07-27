@@ -13,9 +13,10 @@ import { fontSize } from '@mui/system';
 import { RetroTree } from './RetroTree';
 
 
+
 const layout = [
-	{ i: 'a', x: 0, y: 0, w: 60, h: 2, static: true },
-	{ i: 'b', x: 0, y: 2, w: 60, h: 21, static: true },
+	{ i: 'a', x: 0, y: 0, w: 60, h: 1.7, static: true },
+	{ i: 'b', x: 0, y: 1.7, w: 60, h: 21.3, static: true },
 ];
 
 const { innerWidth: width, innerHeight: height } = window;
@@ -35,19 +36,19 @@ function TreeInterface(props) {
 		else
 			setConfidence(globalConfidence);
 
-		if(globalConfidence >= 0.6)
+		if (globalConfidence >= 0.6)
 			setConfidenceLevel("High confidence");
 
 	}, [globalContext])
 
 	return (
-		<GridLayout allowOverlap={true} preventCollision="false" className="layout"
+		<GridLayout allowOverlap={true} preventCollision={false} className="layout"
 			layout={layout} cols={60} rowHeight={rowh} width={width}
 			margin={[3, 0.5]} isResizable={true}>
 
 			<div key="a">
-				<Card variant="outlined" style={{ height: rowh * 2, backgroundColor: "#e9ecef" }}>
-					<Row style={{ position: "relative", top: "25%" }}>
+				<Card variant="outlined" style={{ height: rowh * 1.7, backgroundColor: "#e9ecef" }}>
+					<Row style={{ position: "relative", top: "17%" }}>
 						<div style={{
 							position: "relative", left: "3%",
 							fontSize: "150%", backgroundColor: "#a7f0b9",
@@ -69,7 +70,7 @@ function TreeInterface(props) {
 							variant='contained' size='large'
 							style={{ position: "relative", left: "68%" }}
 							onClick={() => {
-								const promise = fetch("http://192.168.31.118:5000/revise", {
+								const promise = fetch(globalContext.serverIp.concat("revise"), {
 									method: "POST",
 									headers: {
 										"Accept": "application/json",
@@ -79,37 +80,33 @@ function TreeInterface(props) {
 								})
 
 								globalContext.updateRevisePromise(promise);
-								//把sidebar的打开关闭在这个component
-								// .then((response) =>
-								// 	response.json())
-								// .then((responseJson) => {
-								// 	console.log("revise_response", responseJson);
-								// 	globalContext.updateTreeData(responseJson);
-								// 	globalContext.treeGraph.read(responseJson);
-								// })
-								// .catch(err => {
-								// 	console.log("fetching error")
-								// 	console.log(err);
-								// });
 							}}
 						>
 							revise
+						</Button>
+
+						<Button id="constraintButton"
+							variant='contained' size='large'
+							style={{ position: "relative", left: "42%" }}
+						>
+							reconfigure constraints
 						</Button>
 					</Row>
 				</Card>
 			</div>
 			<div key="b">
-				<Card id='treeCard' variant="outlined" style={{ height: rowh * 21 }}>
+				<Card id='treeCard' variant="outlined" style={{ height: rowh * 21.3 }}>
 
 					{props.RetroTreeComponent}
 
-					<Dropdown show="true" drop='up' style={{ position: "absolute", top: "90%", left: "0%" }}>
+					<Dropdown show={true} drop='up' style={{ position: "absolute", top: "84%", left: "0%" }}>
 						<Dropdown.Item>
 							<Row>
 								<div style={{
-									width: "20px", backgroundColor: "rgb(40, 163, 13)",
+									width: "20px",
 									height: "20px"
-									, borderRadius: "2px"
+									, borderRadius: "2px",
+									border: "4px solid rgb(40, 163, 13)"
 								}}></div>
 								<div style={{ width: "10px" }}></div>
 								Commercially/readily available
@@ -118,12 +115,25 @@ function TreeInterface(props) {
 						<Dropdown.Item>
 							<Row>
 								<div style={{
-									width: "20px", backgroundColor: "rgb(206, 78, 4)",
+									width: "20px",
 									height: "20px",
-									borderRadius: "2px"
+									borderRadius: "2px",
+									border: "4px solid rgb(206, 78, 4)"
 								}}></div>
 								<div style={{ width: "10px" }}></div>
-								Not able to find a synthetic path
+								Not able to find a synthetic path by AI
+							</Row>
+						</Dropdown.Item>
+						<Dropdown.Item>
+							<Row>
+								<div style={{
+									width: "20px",
+									height: "20px",
+									borderRadius: "2px",
+									border: "4px solid blue"
+								}}></div>
+								<div style={{ width: "10px" }}></div>
+								Marked as not usable/accessible
 							</Row>
 						</Dropdown.Item>
 					</Dropdown>

@@ -1,8 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "private": true,
-  "homepage": "https://eason51.github.io/RetroLensFront",
+  "homepage": "./",
   "dependencies": {
     "@antv/g6": "^4.6.15",
     "@antv/g6-react-node": "^1.4.5",
@@ -42,10 +41,12 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "4.0.3",
     "react-scroll-sync": "^0.9.0",
+    "react-scrolling-panel": "^1.2.1",
     "react-select": "^4.3.1",
     "react-slider": "^1.3.1",
     "react-sortable-hoc": "^2.0.0",
     "react-tooltip": "^4.2.21",
+    "react-use-refs": "^1.0.1",
     "react-zoom-pan-pinch": "^2.1.2",
     "relect": "^1.2.1",
     "sass": "^1.53.0",
@@ -53,8 +54,8 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-   "predeploy": "npm run build",
-   "deploy": "gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

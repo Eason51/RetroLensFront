@@ -15,6 +15,8 @@ interface ConstraintInputState {
 	value: number | string | number[];
 }
 
+let valueChanged: boolean = false;
+
 class ConstraintInput extends
 	React.Component<{ label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any },
 	ConstraintInputState> {
@@ -39,11 +41,13 @@ class ConstraintInput extends
 		this.handleSliderChange = this.handleSliderChange.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleBlur = this.handleBlur.bind(this);
+
+		// console.log("props", props);
 	}
 
 	componentDidUpdate(prevProps: any, prevState: any) {
 		if (this.state.value !== prevState.value) {
-			this.callback(this.label, this.state.value);
+			this.callback(this.props.label, this.state.value);
 		}
 	}
 
@@ -52,27 +56,38 @@ class ConstraintInput extends
 		this.setState({
 			value: newValue
 		});
+
+		valueChanged = true;
 	}
 
 	handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+
+
+
 		this.setState({
-			value: event.target.value === '' ? '' : Number(event.target.value)
+			value: event.target.value === '' ? '' : Math.round(Number(event.target.value))
 		});
+
+		valueChanged = true;
 	}
 
 	handleBlur() {
 
 		let value = this.state.value;
 
-		if (value < this.lowerLimit) {
+		if (value < this.props.lowerLimit) {
 			this.setState({
-				value: this.lowerLimit
+				value: this.props.lowerLimit
 			});
-		} else if (value > this.higherLimit) {
+		} else if (value > this.props.higherLimit) {
 			this.setState({
-				value: this.higherLimit
+				value: this.props.higherLimit
 			});
 		}
+	}
+
+	UNSAFE_componentWillMount() {
+		valueChanged = false;
 	}
 
 	render() {
@@ -83,34 +98,37 @@ class ConstraintInput extends
 			<Box>
 				<Grid container spacing={2} alignItems="center" wrap='nowrap'>
 					<Grid item xs={4}>
-						<Typography>{this.label}</Typography>
+						<Typography>{this.props.label}</Typography>
 					</Grid>
 					<Grid item xs={1}>
-						<Typography>{this.lowerLimit}</Typography>
+						<Typography>{this.props.lowerLimit}</Typography>
 					</Grid>
 					<Grid item xs>
 						<Slider
 							value={typeof this.state.value === 'number' ? this.state.value : 0}
 							onChange={(event, newValue) => this.handleSliderChange(event, newValue)}
 							aria-labelledby="input-slider"
-							min={this.lowerLimit}
-							max={this.higherLimit}
-							step={(this.label === "MSSR") ? 1 : (this.higherLimit - this.lowerLimit) / 100}
+							min={this.props.lowerLimit}
+							max={this.props.higherLimit}
+							step={(this.props.label === "Maximum Retrosynthetic Steps")
+								? 1
+								: 1}
 						/>
 					</Grid>
 					<Grid item>
-						<Typography>{this.higherLimit}</Typography>
+						<Typography>{this.props.higherLimit}</Typography>
 					</Grid>
 					<Grid item>
 						<Input
-							value={this.state.value}
+							value={valueChanged ? this.state.value : this.props.defaultValue}
 							size="small"
 							onChange={this.handleInputChange}
 							onBlur={this.handleBlur}
 							inputProps={{
-								min: this.lowerLimit,
-								max: this.higherLimit,
-								step: (this.label === "MSSR") ? 1 : (this.higherLimit - this.lowerLimit) / 100,
+								min: this.props.lowerLimit,
+								max: this.props.higherLimit,
+								step: (this.props.label === "Maximum Retrosynthetic Steps") ? 1 :
+									1,
 								type: 'number',
 								'aria-labelledby': 'input-slider',
 							}}

@@ -13,7 +13,8 @@ const GlobalContext = createContext(
 		revisePromise: {},
 		updateRevisePromise: () => {},
 		confidence : -1,
-		updateConfidence: () => {}
+		updateConfidence: () => {},
+		serverIp: ""
 	}
 );
 
