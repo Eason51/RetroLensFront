@@ -1,26 +1,30 @@
 {
   "files": {
-    "main.css": "/RetroLensFront/static/css/main.b26c0a4c.chunk.css",
-    "main.js": "/RetroLensFront/static/js/main.a76a5862.chunk.js",
-    "main.js.map": "/RetroLensFront/static/js/main.a76a5862.chunk.js.map",
-    "runtime-main.js": "/RetroLensFront/static/js/runtime-main.3ec27cf4.js",
-    "runtime-main.js.map": "/RetroLensFront/static/js/runtime-main.3ec27cf4.js.map",
-    "static/css/2.ee7cd670.chunk.css": "/RetroLensFront/static/css/2.ee7cd670.chunk.css",
-    "static/js/2.9ac7a61a.chunk.js": "/RetroLensFront/static/js/2.9ac7a61a.chunk.js",
-    "static/js/2.9ac7a61a.chunk.js.map": "/RetroLensFront/static/js/2.9ac7a61a.chunk.js.map",
-    "static/js/3.59692520.chunk.js": "/RetroLensFront/static/js/3.59692520.chunk.js",
-    "static/js/3.59692520.chunk.js.map": "/RetroLensFront/static/js/3.59692520.chunk.js.map",
-    "index.html": "/RetroLensFront/index.html",
-    "static/css/2.ee7cd670.chunk.css.map": "/RetroLensFront/static/css/2.ee7cd670.chunk.css.map",
-    "static/css/main.b26c0a4c.chunk.css.map": "/RetroLensFront/static/css/main.b26c0a4c.chunk.css.map",
-    "static/js/2.9ac7a61a.chunk.js.LICENSE.txt": "/RetroLensFront/static/js/2.9ac7a61a.chunk.js.LICENSE.txt",
-    "static/media/logo.6ce24c58.svg": "/RetroLensFront/static/media/logo.6ce24c58.svg"
+    "main.css": "/github.io/RetroLensFront/static/css/main.c3fd312c.chunk.css",
+    "main.js": "/github.io/RetroLensFront/static/js/main.21321918.chunk.js",
+    "main.js.map": "/github.io/RetroLensFront/static/js/main.21321918.chunk.js.map",
+    "runtime-main.js": "/github.io/RetroLensFront/static/js/runtime-main.5f2b41a7.js",
+    "runtime-main.js.map": "/github.io/RetroLensFront/static/js/runtime-main.5f2b41a7.js.map",
+    "static/css/2.ee7cd670.chunk.css": "/github.io/RetroLensFront/static/css/2.ee7cd670.chunk.css",
+    "static/js/2.fefecc12.chunk.js": "/github.io/RetroLensFront/static/js/2.fefecc12.chunk.js",
+    "static/js/2.fefecc12.chunk.js.map": "/github.io/RetroLensFront/static/js/2.fefecc12.chunk.js.map",
+    "static/js/3.3f47b2cb.chunk.js": "/github.io/RetroLensFront/static/js/3.3f47b2cb.chunk.js",
+    "static/js/3.3f47b2cb.chunk.js.map": "/github.io/RetroLensFront/static/js/3.3f47b2cb.chunk.js.map",
+    "index.html": "/github.io/RetroLensFront/index.html",
+    "static/css/2.ee7cd670.chunk.css.map": "/github.io/RetroLensFront/static/css/2.ee7cd670.chunk.css.map",
+    "static/css/main.c3fd312c.chunk.css.map": "/github.io/RetroLensFront/static/css/main.c3fd312c.chunk.css.map",
+    "static/js/2.fefecc12.chunk.js.LICENSE.txt": "/github.io/RetroLensFront/static/js/2.fefecc12.chunk.js.LICENSE.txt",
+    "static/media/logo.6ce24c58.svg": "/github.io/RetroLensFront/static/media/logo.6ce24c58.svg",
+    "static/media/molecule.61f56664.jpg": "/github.io/RetroLensFront/static/media/molecule.61f56664.jpg",
+    "static/media/price.777a5262.jpg": "/github.io/RetroLensFront/static/media/price.777a5262.jpg",
+    "static/media/steps.7e8e7d11.jpg": "/github.io/RetroLensFront/static/media/steps.7e8e7d11.jpg",
+    "static/media/substructure.60069b6f.jpg": "/github.io/RetroLensFront/static/media/substructure.60069b6f.jpg"
   },
   "entrypoints": [
-    "static/js/runtime-main.3ec27cf4.js",
+    "static/js/runtime-main.5f2b41a7.js",
     "static/css/2.ee7cd670.chunk.css",
-    "static/js/2.9ac7a61a.chunk.js",
-    "static/css/main.b26c0a4c.chunk.css",
-    "static/js/main.a76a5862.chunk.js"
+    "static/js/2.fefecc12.chunk.js",
+    "static/css/main.c3fd312c.chunk.css",
+    "static/js/main.21321918.chunk.js"
   ]
 }
