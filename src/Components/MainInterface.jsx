@@ -123,7 +123,7 @@ function MainInterface() {
 													setRetroTreeComponent([<RetroTree constraints={constraints} />]);
 													document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
 												
-													document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
+													// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
 												})
 												.catch(err => {
 													console.log("fetching error")

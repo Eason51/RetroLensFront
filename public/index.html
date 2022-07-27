@@ -23,22 +23,33 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
 	<title>React App</title>
+
+	<script defer="defer" src="%PUBLIC_URL%/standalone/static/js/main.027562ee.js"></script>
+	<link href="%PUBLIC_URL%/standalone/static/css/main.8e693d51.css" rel="stylesheet">
 </head>
 
 <body id="body">
 	<noscript>You need to enable JavaScript to run this app.</noscript>
+
+	<div id="root" width=100% height="760" style="position:absolute; top: 35px;">
+
+	</div>
+
 	<div id="drawBoard" style="width: 100%;  height: 100% ;z-index: 1;">
 		<div id="drawBoardText" style="background-color: #eff3f6; width: 100%; height: 38px;
 			font-size: larger; margin-left: 10px;">
 			Draw the target molecule to perform a retrosynthetic route planning.
 		</div>
-		<iframe src="./standalone/index.html" id=ifKetcher width=100% height="780"
-			style="position:absolute; top: 35px;"></iframe>
+		<!-- <iframe src="" id=ifKetcher width=100% height="780"
+			style="position:absolute; top: 35px;"></iframe> -->
 
 		<button id="drawBoardButton" onclick="
-			document.getElementById('ifKetcher').contentWindow.ketcher.getSmiles().then(
+
+			
+			// document.getElementById('ifKetcher').contentWindow.ketcher.getSmiles().then(
+			window.ketcher.getSmiles().then(
 				value => {document.getElementById('smiles').innerHTML = value
-				// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
+					console.log('smiles', value);
 			});
 			// document.getElementById('drawBoard').innerHTML = '';
 			// document.getElementById('main').style.zIndex = 2;
@@ -57,8 +68,8 @@
 			font-size: larger; margin-left: 10px;">
 
 		</div>
-		<iframe src="./standalone/index.html" id=ifKetcher2 width=100% height="780"
-			style="position:absolute; top: 35px;"></iframe>
+		<!-- <iframe src=`${process.env.PUBLIC_URL}/embed.html` id=ifKetcher2 width=100% height="780"
+			style="position:absolute; top: 35px;"></iframe> -->
 		<button id="editMoleculeButton" onclick="
 			document.getElementById('ifKetcher2').contentWindow.ketcher.getSmiles().then(
 				value => {document.getElementById('editMoleculeSmiles').innerHTML = value
