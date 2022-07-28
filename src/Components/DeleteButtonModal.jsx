@@ -59,7 +59,8 @@ function DeleteButtonModal(props) {
 					document.getElementById("drawBoardButton").innerHTML = "Save changes"
 					document.getElementById("drawBoardButton").style.width = "200px";
 					document.getElementById("drawBoardButton").style.left = "80%";
-					document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule(model.smiles);
+					// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule(model.smiles);
+					window.ketcher.setMolecule(model.smiles);
 					document.getElementById("drawBoard").style.visibility = "visible";
 					document.getElementById("drawBoard").style.zIndex = 2;
 					document.getElementById("main").style.zIndex = -1;

@@ -19,11 +19,9 @@ function MainInterface() {
 	const [revisePromise, setRevisePromise] = useState({});
 	const [RetroTreeComponent, setRetroTreeComponent] = useState([]);
 	const [confidence, setConfidence] = useState(-1);
-	const [serverIp, setServerIp] = useState("http://192.168.1.8:5000/");
+	const [serverIp, setServerIp] = useState("http://49.234.10.199:5000/");
 
-	document.getElementById("drawBoardButton").addEventListener("click", ()=> {
-		setShow(true);
-	});
+	document.getElementById("drawBoardButton").addEventListener("click", setShow);
 
 
 
@@ -97,13 +95,15 @@ function MainInterface() {
 
 											globalContext.updateConstraints(constraints);
 
-											// console.log("constraints", constraints);
+											console.log("initial constraints", constraints);
 
 											setShow(false);
 											document.getElementById("drawBoard").style.zIndex = -1;
 											document.getElementById("main").style.zIndex = 2;
 											document.getElementById('drawBoard').style.visibility = 'hidden';
 
+											// console.log("initialize", document.getElementById("smiles").innerHTML);
+											
 											fetch(globalContext.serverIp.concat("initialize"), {
 												method: "POST",
 												headers: {
@@ -124,6 +124,7 @@ function MainInterface() {
 													document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
 												
 													// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
+													window.ketcher.setMolecule('');
 												})
 												.catch(err => {
 													console.log("fetching error")

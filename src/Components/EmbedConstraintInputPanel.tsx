@@ -12,7 +12,7 @@ import { propTypes } from 'react-bootstrap/esm/Image';
 const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
 	<label style={{ marginRight: '1em' }}>
 		<input type="checkbox" {...props}
-			style={{ marginRight: "5px" }}
+			style={{ marginRight: "5px", opacity: "1", position: "initial" }}
 		/>
 		{children}
 	</label>
@@ -43,20 +43,20 @@ class EmbedConstraintInputPanel extends
 		super(props);
 
 		this.state = {
-			price: ("price" in props.currentConstraints && props.currentConstraints.price !== 0) ? 
-				props.currentConstraints.price : 0,
+			price: ("price" in props.currentConstraints && props.currentConstraints.price !== 0) ?
+				props.currentConstraints.price : 1,
 			mssr: ("mssr" in props.currentConstraints && props.currentConstraints.mssr) ?
 				props.currentConstraints.mssr : 3,
 			excludeSubstructure: ("excludeSubstructure" in props.currentConstraints
-				&& props.currentConstraints.excludeSubstructure) ? 
+				&& props.currentConstraints.excludeSubstructure) ?
 				props.currentConstraints.excludeSubstructure : null,
 			excludeSmiles: ("excludeSmiles" in props.currentConstraints
 				&& props.currentConstraints.excludeSmiles) ?
 				props.currentConstraints.excludeSmiles : null,
 
 			isAll: false,
-			isPrice: "price" in props.currentConstraints && props.currentConstraints.price !== 0,
-			isStep: "mssr" in props.currentConstraints && props.currentConstraints.mssr,
+			isPrice: true,
+			isStep: true,
 			isSubstructure: "excludeSubstructure" in props.currentConstraints
 				&& props.currentConstraints.excludeSubstructure,
 			isMolecule: "excludeSmiles" in props.currentConstraints
@@ -94,22 +94,34 @@ class EmbedConstraintInputPanel extends
 	}
 
 	togglePrice = () => {
-		this.setState((state) => ({ isPrice: !state.isPrice }));
+		this.setState((state) => ({
+			isPrice: !state.isPrice,
+			price: 1
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleStep = () => {
-		this.setState((state) => ({ isStep: !state.isStep }));
+		this.setState((state) => ({
+			isStep: !state.isStep,
+			price: 3
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleSubstructure = () => {
-		this.setState((state) => ({ isSubstructure: !state.isSubstructure }));
+		this.setState((state) => ({
+			isSubstructure: !state.isSubstructure,
+			excludeSubstructure: null
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleMolecule = () => {
-		this.setState((state) => ({ isMolecule: !state.isMolecule }));
+		this.setState((state) => ({
+			isMolecule: !state.isMolecule,
+			excludeSmiles: null
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
@@ -162,7 +174,7 @@ class EmbedConstraintInputPanel extends
 					label={"Price Threshold for Molecules"}
 					lowerLimit={1}
 					higherLimit={1000}
-					defaultValue={currentConstraints.price}
+					defaultValue={this.state.price}
 					callback={this.constraintInputCallback}
 				/>
 			</Grid>
@@ -172,7 +184,7 @@ class EmbedConstraintInputPanel extends
 				label={"Maximum Retrosynthetic Steps"}
 				lowerLimit={2}
 				higherLimit={15}
-				defaultValue={currentConstraints.mssr}
+				defaultValue={this.state.mssr}
 				callback={this.constraintInputCallback}
 			/>
 		</Grid>
@@ -183,7 +195,7 @@ class EmbedConstraintInputPanel extends
 				id="outlined-read-only-input"
 				label="Exclude Substructure ( please input substructure smiles, seperate with '.' )"
 				onChange={(event) => this.handleTextFieldChange(event, "substructure")}
-				value={currentConstraints.excludeSubstructure}
+				value={this.state.excludeSubstructure}
 			/>
 		</Grid>
 
@@ -193,7 +205,7 @@ class EmbedConstraintInputPanel extends
 				id="outlined-read-only-input"
 				label="Exclude Molecule ( please input molecule smiles, seperate with '.' )"
 				onChange={(event) => this.handleTextFieldChange(event, "smiles")}
-				value={currentConstraints.excludeSmiles}
+				value={this.state.excludeSmiles}
 			/>
 		</Grid>
 
@@ -239,10 +251,10 @@ class EmbedConstraintInputPanel extends
 							</Checkbox>
 						</Col> */}
 
-						<Checkbox checked={this.state.isPrice} onChange={this.togglePrice}>
+						<Checkbox disabled={true} checked={true} onChange={this.togglePrice}>
 							Price Threshold
 						</Checkbox>
-						<Checkbox checked={this.state.isStep} onChange={this.toggleStep}>
+						<Checkbox disabled={true} checked={true} onChange={this.toggleStep}>
 							Maximum Steps
 						</Checkbox>
 						<Checkbox checked={this.state.isSubstructure} onChange={this.toggleSubstructure}>

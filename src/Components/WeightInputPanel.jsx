@@ -11,11 +11,14 @@ import { propTypes } from 'react-bootstrap/esm/Image';
 const Checkbox = ({ children, ...props }) => (
 	<label style={{ marginRight: '1em' }}>
 		<input type="checkbox" {...props}
-			style={{ marginRight: "5px" }}
+			style={{ marginRight: "5px", opacity: "1", position: "initial" }}
 		/>
 		{children}
 	</label>
 );
+
+
+let isMounted = false;
 
 
 class WeightInputPanel extends React.Component {
@@ -23,109 +26,215 @@ class WeightInputPanel extends React.Component {
 		super(props);
 
 		this.state = {
-			price: ("price" in props.currentConstraints && props.currentConstraints.price !== 0) ?
-				props.currentConstraints.price : 0,
-			mssr: ("mssr" in props.currentConstraints && props.currentConstraints.mssr) ?
-				props.currentConstraints.mssr : 3,
+			influence: ("influence" in props.currentWeights && props.currentWeights.influence) ?
+				props.currentWeights.influence : null,
+			complexity: ("complexity" in props.currentWeights && props.currentWeights.complexity) ?
+				props.currentWeights.complexity : null,
+			convergence: ("convergence" in props.currentWeights && props.currentWeights.convergence) ?
+				props.currentWeights.convergence : null,
+			reactionConfidence: ("reactionConfidence" in props.currentWeights && props.currentWeights.reactionConfidence) ?
+				props.currentWeights.reactionConfidence : null,
+			associatedSubtreeConfidence: ("associatedSubtreeConfidence" in props.currentWeights
+				&& props.currentWeights.associatedSubtreeConfidence) ?
+				props.currentWeights.associatedSubtreeConfidence : null,
 
-			isPrice: "price" in props.currentConstraints && props.currentConstraints.price !== 0,
-			isStep: "mssr" in props.currentConstraints && props.currentConstraints.mssr,
+			isInfluence: "influence" in props.currentWeights && props.currentWeights.influence !== null
+				&& props.currentWeights.influence !== -1,
+			isComplexity: "complexity" in props.currentWeights && props.currentWeights.complexity !== null
+				&& props.currentWeights.complexity !== -1,
+			isConvergence: "convergence" in props.currentWeights && props.currentWeights.convergence !== null
+				&& props.currentWeights.convergence !== -1,
+			isReactionConfidence: "reactionConfidence" in props.currentWeights && props.currentWeights.reactionConfidence !== null
+				&& props.currentWeights.reactionConfidence !== -1,
+			isAssociatedSubtreeConfidence: "associatedSubtreeConfidence" in props.currentWeights
+				&& props.currentWeights.associatedSubtreeConfidence !== null
+				&& props.currentWeights.associatedSubtreeConfidence !== -1
 		}
 
-		this.constraintInputCallback = this.constraintInputCallback.bind(this);
+		this.weightInputCallback = this.weightInputCallback.bind(this);
 	}
 
 
-	toggleAll = () => {
-		this.setState((state) => ({ isAll: !state.isAll }));
 
-		if (!this.state.isAll) {
-			if (!this.state.isPrice)
-				this.togglePrice();
-			if (!this.state.isStep)
-				this.toggleStep();
-		}
-		else {
-			if (this.state.isPrice)
-				this.togglePrice();
-			if (this.state.isStep)
-				this.toggleStep();
-		}
 
+
+	toggleInfluence = () => {
+		// if (this.state.isInfluence == false)
+		// 	this.setState((state) => ({ influence: 0 }));
+		console.log("state", this.state);
+		this.setState((state) => ({
+			isInfluence: !state.isInfluence,
+			influence: (state.isInfluence == false && state.influence == null) ? 0 : state.influence
+		}));
+	}
+	toggleComplexity = () => {
+		// if (this.state.isComplexity == false)
+		// 	this.setState((state) => ({ complexity: 0 }));
+		this.setState((state) => ({
+			isComplexity: !state.isComplexity,
+			complexity: (state.isComplexity == false && state.complexity == null) ? 0 : state.complexity
+		}));
+	}
+	toggleConvergence = () => {
+		// if (this.state.isConvergence == false)
+		// 	this.setState((state) => ({ convergence: 0 }));
+		this.setState((state) => ({
+			isConvergence: !state.isConvergence,
+			convergence: (state.isConvergence == false && state.convergence == null) ? 0 : state.convergence
+		}));
+	}
+	toggleReactionConfidence = () => {
+		// if (this.state.isReactionConfidence == false)
+		// 	this.setState((state) => ({ reactionConfidence: 0 }));
+		this.setState((state) => ({
+			isReactionConfidence: !state.isReactionConfidence,
+			reactionConfidence: (state.isReactionConfidence == false && state.reactionConfidence == null)
+				 ? 0 : state.reactionConfidence
+		}));
+	}
+	toggleAssociatedSubtreeConfidence = () => {
+		// if (this.state.isAssociatedSubtreeConfidence == false)
+		// 	this.setState((state) => ({ associatedSubtreeConfidence: 0 }));
+		this.setState((state) => ({
+			isAssociatedSubtreeConfidence: !state.isAssociatedSubtreeConfidence,
+			associatedSubtreeConfidence: (state.isAssociatedSubtreeConfidence == false 
+					&& state.associatedSubtreeConfidence == null)
+				? 0 : state.associatedSubtreeConfidence
+		}));
 	}
 
-	togglePrice = () => {
-		this.setState((state) => ({ isPrice: !state.isPrice }));
-		if (this.state.isAll)
-			this.setState((state) => ({ isAll: !state.isAll }));
-	}
-	toggleStep = () => {
-		this.setState((state) => ({ isStep: !state.isStep }));
-		if (this.state.isAll)
-			this.setState((state) => ({ isAll: !state.isAll }));
-	}
+
 
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
 
 		if (this.state != prevState) {
-			this.props.updateConstraintFromPanel(
-				this.state.price,
-				this.state.mssr
+
+			// console.log("current state", this.state);
+
+			this.props.updateWeightFromPanel(
+				(this.state.isInfluence) ? this.state.influence : null,
+				(this.state.isComplexity) ? this.state.complexity : null,
+				(this.state.isConvergence) ? this.state.convergence : null,
+				(this.state.isReactionConfidence) ? this.state.reactionConfidence : null,
+				(this.state.isAssociatedSubtreeConfidence) ? this.state.associatedSubtreeConfidence : null
 			);
 		}
-
 	}
 
-	constraintInputCallback(label, value) {
+	weightInputCallback(label, value) {
 
-		if (label === "Price Threshold for Molecules") {
+		if (label === "Influence") {
 			this.setState({
-				price: Number(value)
+				influence: Number(value)
 			});
 		}
-		else if (label === "Maximum Retrosynthetic Steps") {
+		else if (label === "Complexity") {
 			this.setState({
-				mssr: Number(value)
+				complexity: Number(value)
 			})
 		}
+		else if (label === "Convergence") {
+			this.setState({
+				convergence: Number(value)
+			})
+		}
+		else if (label === "Reaction Confidence") {
+			this.setState({
+				reactionConfidence: Number(value)
+			})
+		}
+		else if (label === "Associated Subtree Confidence") {
+			this.setState({
+				associatedSubtreeConfidence: Number(value)
+			})
+		}
+	}
+
+	componentDidMount() {
+		isMounted = true;
 	}
 
 
 	render() {
 
-		const currentConstraints = this.props.currentConstraints;
+		const currentWeights = this.props.currentWeights;
 
-		const PriceInput =
+
+		const InfluenceInput =
 			<Grid item>
 				<ConstraintInput
-					label={"Price Threshold for Molecules"}
-					lowerLimit={1}
-					higherLimit={1000}
-					defaultValue={currentConstraints.price}
-					callback={this.constraintInputCallback}
+					label={"Influence"}
+					lowerLimit={0}
+					higherLimit={100}
+					defaultValue={isMounted ? this.state.influence : currentWeights.influence}
+					callback={this.weightInputCallback}
 				/>
 			</Grid>
 
-		const StepInput = <Grid item>
-			<ConstraintInput
-				label={"Maximum Retrosynthetic Steps"}
-				lowerLimit={2}
-				higherLimit={15}
-				defaultValue={currentConstraints.mssr}
-				callback={this.constraintInputCallback}
-			/>
-		</Grid>
+		const ComplexityInput =
+			<Grid item>
+				<ConstraintInput
+					label={"Complexity"}
+					lowerLimit={0}
+					higherLimit={100}
+					defaultValue={isMounted ? this.state.complexity : currentWeights.complexity}
+					callback={this.weightInputCallback}
+				/>
+			</Grid>
+
+		const ConvergenceInput =
+			<Grid item>
+				<ConstraintInput
+					label={"Convergence"}
+					lowerLimit={0}
+					higherLimit={100}
+					defaultValue={isMounted ? this.state.convergence : currentWeights.convergence}
+					callback={this.weightInputCallback}
+				/>
+			</Grid>
+
+		const ReactionConfidenceInput =
+			<Grid item>
+				<ConstraintInput
+					label={"Reaction Confidence"}
+					lowerLimit={0}
+					higherLimit={100}
+					defaultValue={isMounted ? this.state.reactionConfidence : currentWeights.reactionConfidence}
+					callback={this.weightInputCallback}
+				/>
+			</Grid>
+
+		const AssociatedSubtreeConfidenceInput =
+			<Grid item>
+				<ConstraintInput
+					label={"Associated Subtree Confidence"}
+					lowerLimit={0}
+					higherLimit={100}
+					defaultValue={isMounted ? this.state.associatedSubtreeConfidence :
+						 currentWeights.associatedSubtreeConfidence}
+					callback={this.weightInputCallback}
+				/>
+			</Grid>
 
 
 		let inputList = [];
 
-		if (this.state.isPrice) {
-			inputList.push(PriceInput);
-		}
 
-		if (this.state.isStep) {
-			inputList.push(StepInput);
+		if (this.state.isInfluence) {
+			inputList.push(InfluenceInput);
+		}
+		if (this.state.isComplexity) {
+			inputList.push(ComplexityInput);
+		}
+		if (this.state.isConvergence) {
+			inputList.push(ConvergenceInput);
+		}
+		if (this.state.isReactionConfidence) {
+			inputList.push(ReactionConfidenceInput);
+		}
+		if (this.state.isAssociatedSubtreeConfidence) {
+			inputList.push(AssociatedSubtreeConfidenceInput);
 		}
 
 
@@ -141,11 +250,21 @@ class WeightInputPanel extends React.Component {
 						}}
 					>
 
-						<Checkbox checked={this.state.isPrice} onChange={this.togglePrice}>
-							Price Threshold
+						<Checkbox checked={this.state.isInfluence} onChange={this.toggleInfluence}>
+							Influence
 						</Checkbox>
-						<Checkbox checked={this.state.isStep} onChange={this.toggleStep}>
-							Maximum Steps
+						<Checkbox checked={this.state.isComplexity} onChange={this.toggleComplexity}>
+							Complexity
+						</Checkbox>
+						<Checkbox checked={this.state.isConvergence} onChange={this.toggleConvergence}>
+							Convergence
+						</Checkbox>
+						<Checkbox checked={this.state.isReactionConfidence} onChange={this.toggleReactionConfidence}>
+							Reaction Confidence
+						</Checkbox>
+						<Checkbox checked={this.state.isAssociatedSubtreeConfidence}
+							onChange={this.toggleAssociatedSubtreeConfidence}>
+							Associated Subtree Confidence
 						</Checkbox>
 					</div>
 				</Grid>

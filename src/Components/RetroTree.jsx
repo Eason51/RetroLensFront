@@ -83,13 +83,28 @@ const RetroTree = (props) => {
 	const [showConstraintInput, setShowConstraintInput] = useState(false);
 	const [, updateState] = React.useState();
 	const forceUpdate = React.useCallback(() => updateState({}), []);
-	const [weights, updateWeights] = useState({});
+	const [weights, updateWeights] = useState({
+		influence: null,
+		complexity: null,
+		convergence: null,
+		reactionConfidence: null,
+		associatedSubtreeConfidence: null
+	});
+	const [savedWeights, updateSavedWeights] = useState({
+		influence: null,
+		complexity: null,
+		convergence: null,
+		reactionConfidence: null,
+		associatedSubtreeConfidence: null
+	});
+	const [showWeightInput, setShowWeightInput] = useState(false);
 
 	// const stateRef = useRef();
 	// stateRef.current = savedConstraints;
 
 	const [stateRef, weightRef] = useRefs();
 	stateRef.current = savedConstraints;
+	weightRef.current = savedWeights;
 
 
 	const updateConstraintFromPanel = (price, mssr, excludeSubstructure, excludeSmiles) => {
@@ -101,12 +116,15 @@ const RetroTree = (props) => {
 		})
 	};
 
-	const updateWeightFromPanel = (influence, complexity, convergence, reactionConfidence, associatedSubtreeConfidence) =>{
+	const updateWeightFromPanel = (influence, complexity, convergence, reactionConfidence, associatedSubtreeConfidence) => {
 		updateWeights({
 			influence: influence,
 			complexity: complexity,
-			convergence: convergence
+			convergence: convergence,
+			reactionConfidence: reactionConfidence,
+			associatedSubtreeConfidence: associatedSubtreeConfidence
 		});
+
 	}
 
 
@@ -122,6 +140,7 @@ const RetroTree = (props) => {
 
 		let model = selectedModel;
 		const currentSmiles = document.getElementById("smiles").innerHTML;
+		// console.log("disconnection", document.getElementById("smiles").innerHTML);
 		const smilesArr = currentSmiles.split(".");
 		let id = "";
 		model.children = [];
@@ -242,6 +261,10 @@ const RetroTree = (props) => {
 
 	const displayConstraintInputPanel = () => {
 		setShowConstraintInput(true);
+	}
+
+	const displayWeightInputPanel = () => {
+		setShowWeightInput(true);
 	}
 
 
@@ -397,132 +420,133 @@ const RetroTree = (props) => {
 	const [oldGlobalContext, setOldGlobalContext] = useState({});
 
 
-	useEffect(() => {
+	// useEffect(() => {
 
-		if (oldGlobalContext.revisePromise != globalContext.revisePromise
-			&& globalContext.revisePromise.then) {
-			// console.log("reviseContext", globalContext.revisePromise);
-			globalContext.revisePromise
-				.then((response) =>
-					response.json())
-				.then((responseJson) => {
-					console.log("revise_response", responseJson);
-					globalContext.updateTreeData(responseJson);
-					graph.read(responseJson);
+	// 	if (oldGlobalContext.revisePromise != globalContext.revisePromise
+	// 		&& globalContext.revisePromise.then) {
+	// 		// console.log("reviseContext", globalContext.revisePromise);
+	// 		globalContext.revisePromise
+	// 			.then((response) =>
+	// 				response.json())
+	// 			.then((responseJson) => {
+	// 				console.log("revise_response", responseJson);
+	// 				globalContext.updateTreeData(responseJson);
+	// 				graph.read(responseJson);
 
-					setReviseList([]);
-					let tempReviseList = [];
-					G6.Util.traverseTree(graph.cfg.data,
-						(node) => {
-							if ("rank" in node && node.rank > 0) {
+	// 				setReviseList([]);
+	// 				let tempReviseList = [];
+	// 				G6.Util.traverseTree(graph.cfg.data,
+	// 					(node) => {
+	// 						if ("rank" in node && node.rank > 0) {
 
-								const id = "selectedRoute" + node.rank;
+	// 							const id = "selectedRoute" + node.rank;
 
-								tempReviseList.push(
-									[parseInt(node.rank),
-									<MenuItem
-										// style={{
-										// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
-										// }}	
-										onClick={
-											(e) => {
+	// 							tempReviseList.push(
+	// 								[parseInt(node.rank),
+	// 								<MenuItem
+	// 									// style={{
+	// 									// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
+	// 									// }}	
+	// 									onClick={
+	// 										(e) => {
 
-												if (previousReviseSelectedNode)
-													document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
-														.style.backgroundColor = "#f4f5f7";
+	// 											if (previousReviseSelectedNode)
+	// 												document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
+	// 													.style.backgroundColor = "#f4f5f7";
 
-												document.getElementById("selectedRoute" + node.rank)
-													.style.backgroundColor = "#e9ecef";
+	// 											document.getElementById("selectedRoute" + node.rank)
+	// 												.style.backgroundColor = "#e9ecef";
 
-												previousReviseSelectedNode = node;
+	// 											previousReviseSelectedNode = node;
 
-												G6.Util.traverseTree(graph.cfg.data,
-													(innerNode) => {
-														if ("reviseSelected" in innerNode
-															&& innerNode.reviseSelected == true) {
-															innerNode.reviseSelected = false
-														}
-													}
-												);
+	// 											G6.Util.traverseTree(graph.cfg.data,
+	// 												(innerNode) => {
+	// 													if ("reviseSelected" in innerNode
+	// 														&& innerNode.reviseSelected == true) {
+	// 														innerNode.reviseSelected = false
+	// 													}
+	// 												}
+	// 											);
 
-												node.reviseSelected = true;
-												globalContext.updateTreeData(graph.cfg.data);
-												graph.read(graph.cfg.data);
-											}
-										}
-									>
+	// 											node.reviseSelected = true;
+	// 											globalContext.updateTreeData(graph.cfg.data);
+	// 											graph.read(graph.cfg.data);
+	// 										}
+	// 									}
+	// 								>
 
-										<DropdownItem
-											id={id}
-											style={{
-												height: "100px", color: "black",
-												padding: "0px"
-											}} size="lg">
+	// 									<DropdownItem
+	// 										id={id}
+	// 										style={{
+	// 											height: "100px", color: "black",
+	// 											padding: "0px"
+	// 										}} size="lg">
 
-											<div style={{
-												fontFamily: "consolas",
-												fontSize: "20px", justifyItems: "start",
-												position: "relative", top: "10px", left: "10px"
-											}}>
-												<Text>Rank {node.rank} (Score: {node.SAW})</Text>
+	// 										<div style={{
+	// 											fontFamily: "consolas",
+	// 											fontSize: "20px", justifyItems: "start",
+	// 											position: "relative", top: "10px", left: "10px"
+	// 										}}>
+	// 											<Text>Rank {node.rank} (Score: {node.SAW})</Text>
 
-											</div>
+	// 										</div>
 
-											<div style={{
-												fontFamily: "consolas",
-												fontSize: "12px", justifyItems: "start",
-												position: "relative", top: "10px", left: "10px"
-											}}>
-												<Text>
-													<div>
-														<span>influence: {node.influence} </span>
-														<span>reaction confidence: {node.reactionConfidence} </span>
-													</div>
-													<div>
-														<span>complexity: {node.complexity} </span>
-														<span>convergence: {node.convergence}</span>
-													</div>
-													<div>
-														<span>associated subtree confidence: {
-															node.associatedSubtreeConfidence
-														}</span>
-													</div>
+	// 										<div style={{
+	// 											fontFamily: "consolas",
+	// 											fontSize: "12px", justifyItems: "start",
+	// 											position: "relative", top: "10px", left: "10px"
+	// 										}}>
+	// 											<Text>
+	// 												<div>
+	// 													<span>influence: {node.influence} </span>
+	// 													<span>reaction confidence: {node.reactionConfidence} </span>
+	// 												</div>
+	// 												<div>
+	// 													<span>complexity: {node.complexity} </span>
+	// 													<span>convergence: {node.convergence}</span>
+	// 												</div>
+	// 												<div>
+	// 													<span>associated subtree confidence: {
+	// 														node.associatedSubtreeConfidence
+	// 													}</span>
+	// 												</div>
 
-												</Text>
+	// 											</Text>
 
-											</div>
+	// 										</div>
 
 
-										</DropdownItem>
+	// 									</DropdownItem>
 
-									</MenuItem>
-									]
-								);
-							}
-						});
-					tempReviseList.sort();
-					let tempReviseList2 = [];
-					tempReviseList.forEach(([rank, component]) => {
-						tempReviseList2.push(component);
-					})
-					setReviseList(tempReviseList2);
-				})
-				.catch(err => {
-					console.log("fetching error")
-					console.log(err);
-				});
-		}
+	// 								</MenuItem>
+	// 								]
+	// 							);
+	// 						}
+	// 					});
+	// 				tempReviseList.sort();
+	// 				let tempReviseList2 = [];
+	// 				tempReviseList.forEach(([rank, component]) => {
+	// 					tempReviseList2.push(component);
+	// 				})
+	// 				setReviseList(tempReviseList2);
+	// 			})
+	// 			.catch(err => {
+	// 				console.log("fetching error")
+	// 				console.log(err);
+	// 			});
+	// 	}
 
-		setOldGlobalContext(globalContext);
-	}, [globalContext])
+	// 	setOldGlobalContext(globalContext);
+	// }, [globalContext])
 
 
 
 	useEffect(() => {
 
 		document.getElementById("drawBoardButton").addEventListener("click", exitDrawBoard);
-		document.getElementById("editMoleculeButton").addEventListener("click", exitEditMolecule);
-		document.getElementById("reviseButton").addEventListener("click", displayReviseMenu);
+		// document.getElementById("editMoleculeButton").addEventListener("click", exitEditMolecule);
+		// document.getElementById("reviseButton").addEventListener("click", displayReviseMenu);
+		document.getElementById("reviseButton").addEventListener("click", displayWeightInputPanel);
 		document.getElementById("constraintButton").addEventListener("click", displayConstraintInputPanel);
 
 		const data = globalContext.treeData;
@@ -676,6 +700,8 @@ const RetroTree = (props) => {
 							},
 							offset: 10,
 						},
+						"drag-canvas",
+						"zoom-canvas"
 					],
 				},
 				defaultEdge: {
@@ -683,7 +709,7 @@ const RetroTree = (props) => {
 					style: {
 						// stroke: '#0f62fe',
 						// startArrow: true,
-						offset: 10
+						offset: 20
 					}
 				},
 				// edgeStateStyles: {
@@ -709,7 +735,7 @@ const RetroTree = (props) => {
 					type: 'compactBox', // 布局类型
 					direction: 'TB',    // 自左至右布局，可选的有 H / V / LR / RL / TB / BT
 					nodeSep: 250,      // 节点之间间距
-					rankSep: 200,      // 每个层级之间的间距
+					rankSep: 160,      // 每个层级之间的间距
 					getHGap: (d) => {
 						return 100;
 					},
@@ -822,15 +848,15 @@ const RetroTree = (props) => {
 											fontSize: "15px", flexWrap: "nowrap"
 										}}>
 											<div><b>Influence:</b>  the number of molecules affected by revising the step</div>
-											<div style={{height: "7px"}}></div>
+											<div style={{ height: "7px" }}></div>
 											<div><b>Reaction confidence:</b> the confidence in the step of disconnection</div>
-											<div style={{height: "7px"}}></div>
+											<div style={{ height: "7px" }}></div>
 											<div><b>Complexity:</b>  the reduction of the complexity of the step's reactants compared to its product</div>
-											<div style={{height: "7px"}}></div>
+											<div style={{ height: "7px" }}></div>
 											<div><b>Convergence:</b> the number of reactants in the step and their relative sizes</div>
-											<div style={{height: "7px"}}></div>
-											<div><b>Associated subtree confidence:</b> the confidence in the associated subtrees in the step <br/>
-												other than the subtree containing the molecule(s) that are not able to find a retrosynthetic <br/>
+											<div style={{ height: "7px" }}></div>
+											<div><b>Associated subtree confidence:</b> the confidence in the associated subtrees in the step <br />
+												other than the subtree containing the molecule(s) that are not able to find a retrosynthetic <br />
 												route by AI or not usable/accessible</div>
 										</div>
 									</React.Fragment>
@@ -908,6 +934,8 @@ const RetroTree = (props) => {
 							updateSavedConstraints(constraints);
 							setShowConstraintInput(false);
 
+							console.log("currentConstraints", constraints);
+
 							fetch(globalContext.serverIp.concat("reconfigureConstraints"), {
 								method: "POST",
 								headers: {
@@ -936,14 +964,157 @@ const RetroTree = (props) => {
 			</Modal>
 
 
-			<Modal id="modal" show={false} centered size="lg">
+			<Modal id="modal" show={showWeightInput} centered size="lg">
 				<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
 					Adjust Criteria Weighting
 				</div>
 
 				<div style={{ margin: "40px", marginTop: "20px" }}>
-					{/* <WeightInputPanel/> */}
+					<WeightInputPanel updateWeightFromPanel={updateWeightFromPanel}
+						currentWeights={weightRef.current}
+					/>
+				</div>
 
+				<div>
+
+					<Button style={{ width: "50%" }}
+						onClick={() => {
+							setShowWeightInput(false);
+						}}>
+						cancel
+					</Button>
+
+					<Button onClick={
+						() => {
+							updateSavedWeights(weights);
+							setShowWeightInput(false);
+
+							displayReviseMenu();
+
+							console.log("currentWeight", weights);
+
+							fetch(globalContext.serverIp.concat("revise"), {
+								method: "POST",
+								headers: {
+									"Accept": "application/json",
+									"Content-Type": "application/json"
+								},
+								body: JSON.stringify(graph.cfg.data)
+							})
+								.then((response) =>
+									response.json())
+								.then((responseJson) => {
+									console.log("revise_response", responseJson);
+									globalContext.updateTreeData(responseJson);
+									graph.read(responseJson);
+
+									setReviseList([]);
+									let tempReviseList = [];
+									G6.Util.traverseTree(graph.cfg.data,
+										(node) => {
+											if ("rank" in node && node.rank > 0) {
+
+												const id = "selectedRoute" + node.rank;
+
+												tempReviseList.push(
+													[parseInt(node.rank),
+													<MenuItem
+														// style={{
+														// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
+														// }}	
+														onClick={
+															(e) => {
+
+																if (previousReviseSelectedNode)
+																	document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
+																		.style.backgroundColor = "#f4f5f7";
+
+																document.getElementById("selectedRoute" + node.rank)
+																	.style.backgroundColor = "#e9ecef";
+
+																previousReviseSelectedNode = node;
+
+																G6.Util.traverseTree(graph.cfg.data,
+																	(innerNode) => {
+																		if ("reviseSelected" in innerNode
+																			&& innerNode.reviseSelected == true) {
+																			innerNode.reviseSelected = false
+																		}
+																	}
+																);
+
+																node.reviseSelected = true;
+																globalContext.updateTreeData(graph.cfg.data);
+																graph.read(graph.cfg.data);
+															}
+														}
+													>
+
+														<DropdownItem
+															id={id}
+															style={{
+																height: "100px", color: "black",
+																padding: "0px"
+															}} size="lg">
+
+															<div style={{
+																fontFamily: "consolas",
+																fontSize: "20px", justifyItems: "start",
+																position: "relative", top: "10px", left: "10px"
+															}}>
+																<Text>Rank {node.rank} (Score: {node.SAW})</Text>
+
+															</div>
+
+															<div style={{
+																fontFamily: "consolas",
+																fontSize: "12px", justifyItems: "start",
+																position: "relative", top: "10px", left: "10px"
+															}}>
+																<Text>
+																	<div>
+																		<span>influence: {node.influence} </span>
+																		<span>reaction confidence: {node.reactionConfidence} </span>
+																	</div>
+																	<div>
+																		<span>complexity: {node.complexity} </span>
+																		<span>convergence: {node.convergence}</span>
+																	</div>
+																	<div>
+																		<span>associated subtree confidence: {
+																			node.associatedSubtreeConfidence
+																		}</span>
+																	</div>
+
+																</Text>
+
+															</div>
+
+
+														</DropdownItem>
+
+													</MenuItem>
+													]
+												);
+											}
+										});
+									tempReviseList.sort();
+									let tempReviseList2 = [];
+									tempReviseList.forEach(([rank, component]) => {
+										tempReviseList2.push(component);
+									})
+									setReviseList(tempReviseList2);
+								})
+								.catch(err => {
+									console.log("fetching error")
+									console.log(err);
+								});
+						}
+					}
+						style={{ width: "50%" }}
+					>
+						confirm
+					</Button>
 				</div>
 			</Modal>
 

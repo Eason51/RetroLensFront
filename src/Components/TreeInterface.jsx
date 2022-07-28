@@ -70,16 +70,16 @@ function TreeInterface(props) {
 							variant='contained' size='large'
 							style={{ position: "relative", left: "68%" }}
 							onClick={() => {
-								const promise = fetch(globalContext.serverIp.concat("revise"), {
-									method: "POST",
-									headers: {
-										"Accept": "application/json",
-										"Content-Type": "application/json"
-									},
-									body: JSON.stringify(globalContext.treeData)
-								})
+								// const promise = fetch(globalContext.serverIp.concat("revise"), {
+								// 	method: "POST",
+								// 	headers: {
+								// 		"Accept": "application/json",
+								// 		"Content-Type": "application/json"
+								// 	},
+								// 	body: JSON.stringify(globalContext.treeData)
+								// })
 
-								globalContext.updateRevisePromise(promise);
+								// globalContext.updateRevisePromise(promise);
 							}}
 						>
 							revise

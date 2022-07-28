@@ -80,7 +80,7 @@ G6.registerNode(
 				group.addShape('rect', {
 					attrs: {
 						width: 136,
-						height: 137,
+						height: 117,
 						stroke: borderColor,
 						lineWidth: 2,
 						radius: [0],
@@ -94,7 +94,7 @@ G6.registerNode(
 				group.addShape('rect', {
 					attrs: {
 						width: 136,
-						height: 137,
+						height: 117,
 						stroke: borderColor,
 						lineWidth: 3,
 						radius: [0],
@@ -162,19 +162,19 @@ G6.registerNode(
 					name: 'Image',
 				});
 
-				group.addShape('rect', {
-					attrs: {
-						y: 117,
-						width: 136,
-						height: 20,
-						stroke: 'grey',
-						lineWidth: 2,
-						radius: [0],
-						justifyContent: "center",
-						fill: "white"
-					},
-					name: 'Text',
-				});
+				// group.addShape('rect', {
+				// 	attrs: {
+				// 		y: 117,
+				// 		width: 136,
+				// 		height: 20,
+				// 		stroke: 'grey',
+				// 		lineWidth: 2,
+				// 		radius: [0],
+				// 		justifyContent: "center",
+				// 		fill: "white"
+				// 	},
+				// 	name: 'Text',
+				// });
 			}
 			else {
 				group.addShape('rect', {
@@ -189,19 +189,19 @@ G6.registerNode(
 					name: 'Image',
 				});
 
-				group.addShape('rect', {
-					attrs: {
-						y: 117,
-						width: 136,
-						height: 20,
-						stroke: borderColor,
-						lineWidth: 2,
-						radius: [0],
-						justifyContent: "center",
-						fill: "white"
-					},
-					name: 'Text',
-				});
+				// group.addShape('rect', {
+				// 	attrs: {
+				// 		y: 117,
+				// 		width: 136,
+				// 		height: 20,
+				// 		stroke: borderColor,
+				// 		lineWidth: 2,
+				// 		radius: [0],
+				// 		justifyContent: "center",
+				// 		fill: "white"
+				// 	},
+				// 	name: 'Text',
+				// });
 
 				group.addShape("path", {
 					attrs: {
@@ -232,54 +232,54 @@ G6.registerNode(
 
 
 			if (mouseEnter) {
-				group.addShape('rect', {
-					attrs: {
-						x: 45,
-						y: 120,
-						width: 20,
-						height: 15,
-						// stroke: 'black',
-						radius: [0],
-						justifyContent: "center",
-					},
-					name: 'editMoleculeContainer',
-				});
+				// group.addShape('rect', {
+				// 	attrs: {
+				// 		x: 45,
+				// 		y: 120,
+				// 		width: 20,
+				// 		height: 15,
+				// 		// stroke: 'black',
+				// 		radius: [0],
+				// 		justifyContent: "center",
+				// 	},
+				// 	name: 'editMoleculeContainer',
+				// });
 
-				group.addShape("image", {
-					attrs: {
-						x: 40,
-						y: 118,
-						width: 19,
-						height: 19,
-						img: "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJpY29uIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKICAgICAgICAgICAgdmlld0JveD0iMCAwIDMyIDMyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAzMiAzMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjIiIGZpbGw9IiMwZjYyZmUiLz4KICAgICAgICAgICAgPHBhdGggZD0iTTI1LjQsOWMwLjgtMC44LDAuOC0yLDAtMi44YzAsMCwwLDAsMCwwbC0zLjYtMy42Yy0wLjgtMC44LTItMC44LTIuOCwwYzAsMCwwLDAsMCwwbC0xNSwxNVYyNGg2LjRMMjUuNCw5eiBNMjAuNCw0TDI0LDcuNgogICAgICAgICAgICAgIGwtMywzTDE3LjQsN0wyMC40LDR6IE02LDIydi0zLjZsMTAtMTBsMy42LDMuNmwtMTAsMTBINnoiCiAgICAgICAgICAgICAgZmlsbD0iIzBmNjJmZSIvPgogICAgICAgICAgICA8L3N2Zz4="
-					},
-					name: "editMolecule"
-				})
+				// group.addShape("image", {
+				// 	attrs: {
+				// 		x: 40,
+				// 		y: 118,
+				// 		width: 19,
+				// 		height: 19,
+				// 		img: "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJpY29uIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKICAgICAgICAgICAgdmlld0JveD0iMCAwIDMyIDMyIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAzMiAzMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSIyNiIgd2lkdGg9IjI4IiBoZWlnaHQ9IjIiIGZpbGw9IiMwZjYyZmUiLz4KICAgICAgICAgICAgPHBhdGggZD0iTTI1LjQsOWMwLjgtMC44LDAuOC0yLDAtMi44YzAsMCwwLDAsMCwwbC0zLjYtMy42Yy0wLjgtMC44LTItMC44LTIuOCwwYzAsMCwwLDAsMCwwbC0xNSwxNVYyNGg2LjRMMjUuNCw5eiBNMjAuNCw0TDI0LDcuNgogICAgICAgICAgICAgIGwtMywzTDE3LjQsN0wyMC40LDR6IE02LDIydi0zLjZsMTAtMTBsMy42LDMuNmwtMTAsMTBINnoiCiAgICAgICAgICAgICAgZmlsbD0iIzBmNjJmZSIvPgogICAgICAgICAgICA8L3N2Zz4="
+				// 	},
+				// 	name: "editMolecule"
+				// })
 
-				group.addShape('rect', {
-					attrs: {
-						x: 75,
-						y: 120,
-						width: 20,
-						height: 15,
-						// stroke: 'black',
-						radius: [0],
-						justifyContent: "center",
-						// fill: "blue"
-					},
-					name: 'deleteMoleculeContainer',
-				});
+				// group.addShape('rect', {
+				// 	attrs: {
+				// 		x: 75,
+				// 		y: 120,
+				// 		width: 20,
+				// 		height: 15,
+				// 		// stroke: 'black',
+				// 		radius: [0],
+				// 		justifyContent: "center",
+				// 		// fill: "blue"
+				// 	},
+				// 	name: 'deleteMoleculeContainer',
+				// });
 
-				group.addShape("image", {
-					attrs: {
-						x: 80,
-						y: 118,
-						width: 19,
-						height: 19,
-						img: "data:image/svg+xml;base64,PHN2ZyBpZD0iaWNvbiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxyZWN0IGZpbGw9IiMwZjYyZmUiIHg9IjEyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiLz48cmVjdCBmaWxsPSIjMGY2MmZlIiB4PSIxOCIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjEyIi8+PHBhdGggZmlsbD0iIzBmNjJmZSIgZD0iTTQsNlY4SDZWMjhhMiwyLDAsMCwwLDIsMkgyNGEyLDIsMCwwLDAsMi0yVjhoMlY2Wk04LDI4VjhIMjRWMjhaIi8+PHJlY3QgZmlsbD0iIzBmNjJmZSIgeD0iMTIiIHk9IjIiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiLz48L3N2Zz4="
-					},
-					name: "deleteMolecule"
-				})
+				// group.addShape("image", {
+				// 	attrs: {
+				// 		x: 80,
+				// 		y: 118,
+				// 		width: 19,
+				// 		height: 19,
+				// 		img: "data:image/svg+xml;base64,PHN2ZyBpZD0iaWNvbiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzIgMzIiPjxyZWN0IGZpbGw9IiMwZjYyZmUiIHg9IjEyIiB5PSIxMiIgd2lkdGg9IjIiIGhlaWdodD0iMTIiLz48cmVjdCBmaWxsPSIjMGY2MmZlIiB4PSIxOCIgeT0iMTIiIHdpZHRoPSIyIiBoZWlnaHQ9IjEyIi8+PHBhdGggZmlsbD0iIzBmNjJmZSIgZD0iTTQsNlY4SDZWMjhhMiwyLDAsMCwwLDIsMkgyNGEyLDIsMCwwLDAsMi0yVjhoMlY2Wk04LDI4VjhIMjRWMjhaIi8+PHJlY3QgZmlsbD0iIzBmNjJmZSIgeD0iMTIiIHk9IjIiIHdpZHRoPSI4IiBoZWlnaHQ9IjIiLz48L3N2Zz4="
+				// 	},
+				// 	name: "deleteMolecule"
+				// })
 
 			}
 			else if ("failureCause" in cfg) {
@@ -388,7 +388,7 @@ G6.registerNode(
 			if (hasChildren) {
 				group.addShape('rect', {
 					attrs: {
-						y: 157,
+						y: 137,
 						width: 136,
 						height: 20,
 						// stroke: 'black',
@@ -404,8 +404,8 @@ G6.registerNode(
 						stroke: "#0f62fe",
 						lineWidth: 1.1,
 						path: [
-							["M", 68, 157],
-							["L", 68, 137],
+							["M", 68, 137],
+							["L", 68, 117],
 							["Z"]
 						]
 					},
@@ -418,9 +418,9 @@ G6.registerNode(
 						stroke: "#0f62fe",
 						lineWidth: 1.1,
 						path: [
-							["M", 74, 145],
-							["L", 68, 137],
-							["L", 62, 145],
+							["M", 74, 125],
+							["L", 68, 117],
+							["L", 62, 125],
 							["Z"]
 						],
 						fill: "#0f62fe"
@@ -431,7 +431,7 @@ G6.registerNode(
 				group.addShape("rect", {
 					attrs: {
 						x: 45,
-						y: 158,
+						y: 138,
 						width: 20,
 						// height: 15,
 						// stroke: "black",
@@ -444,7 +444,7 @@ G6.registerNode(
 				group.addShape("image", {
 					attrs: {
 						x: 40,
-						y: 158,
+						y: 138,
 						width: 19,
 						height: 19,
 						img: "data:image/svg+xml;base64,PHN2ZyBmb2N1c2FibGU9ImZhbHNlIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDMyIDMyIiBhcmlhLWhpZGRlbj0idHJ1ZSIgc3R5bGU9IndpbGwtY2hhbmdlOiB0cmFuc2Zvcm07Ij4KICAgICAgICAgICAgICA8cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTIgMjdoMjh2Mkgyek0yNS40MSA5YTIgMiAwIDAgMCAwLTIuODNsLTMuNTgtMy41OGEyIDIgMCAwIDAtMi44MyAwbC0xNSAxNVYyNGg2LjQxem0tNS01TDI0IDcuNTlsLTMgM0wxNy40MSA3ek02IDIydi0zLjU5bDEwLTEwTDE5LjU5IDEybC0xMCAxMHoiLz4KICAgICAgICAgICAgPC9zdmc+"
@@ -456,7 +456,7 @@ G6.registerNode(
 				group.addShape("rect", {
 					attrs: {
 						x: 75,
-						y: 158,
+						y: 138,
 						width: 20,
 						height: 15,
 						// stroke: "black",
@@ -469,7 +469,7 @@ G6.registerNode(
 				group.addShape("image", {
 					attrs: {
 						x: 80, // 80 - 99
-						y: 158, // 158 - 177
+						y: 138, // 158 - 177
 						width: 19,
 						height: 19,
 						img: "data:image/svg+xml;base64,PHN2ZyBpZD0iaWNvbiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMzIgMzIiPgogICAgICAgICAgICAgIDxkZWZzPjxzdHlsZT4uY2xzLTF7ZmlsbDpub25lO308L3N0eWxlPjwvZGVmcz4KICAgICAgICAgICAgICA8cGF0aCBmaWxsPSJ3aGl0ZSIgZD0iTTI4LDEyYTIsMiwwLDAsMCwyLTJWNGEyLDIsMCwwLDAtMi0ySDRBMiwyLDAsMCwwLDIsNHY2YTIsMiwwLDAsMCwyLDJIMTV2NEg5YTIsMiwwLDAsMC0yLDJ2NEg0YTIsMiwwLDAsMC0yLDJ2NGEyLDIsMCwwLDAsMiwyaDhhMiwyLDAsMCwwLDItMlYyNGEyLDIsMCwwLDAtMi0ySDlWMThIMjN2NEgyMGEyLDIsMCwwLDAtMiwydjRhMiwyLDAsMCwwLDIsMmg4YTIsMiwwLDAsMCwyLTJWMjRhMiwyLDAsMCwwLTItMkgyNVYxOGEyLDIsMCwwLDAtMi0ySDE3VjEyWk0xMiwyOEg0VjI0aDhabTE2LDBIMjBWMjRoOFpNNCw0SDI4djZINFoiLz4KICAgICAgICAgICAgICA8cmVjdCBpZD0iX1RyYW5zcGFyZW50X1JlY3RhbmdsZV8iIGRhdGEtbmFtZT0iJmx0O1RyYW5zcGFyZW50IFJlY3RhbmdsZSZndDsiIGNsYXNzPSJjbHMtMSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+CiAgICAgICAgICAgIDwvc3ZnPg=="

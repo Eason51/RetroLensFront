@@ -31,9 +31,7 @@
 <body id="body">
 	<noscript>You need to enable JavaScript to run this app.</noscript>
 
-	<div id="root" width=100% height="760" style="position:absolute; top: 35px;">
 
-	</div>
 
 	<div id="drawBoard" style="width: 100%;  height: 100% ;z-index: 1;">
 		<div id="drawBoardText" style="background-color: #eff3f6; width: 100%; height: 38px;
@@ -42,53 +40,45 @@
 		</div>
 		<!-- <iframe src="" id=ifKetcher width=100% height="780"
 			style="position:absolute; top: 35px;"></iframe> -->
+		<div id="root" width=100% style="position:absolute; top: 35px; height: 780px">
 
+		</div>
 		<button id="drawBoardButton" onclick="
-
-			
-			// document.getElementById('ifKetcher').contentWindow.ketcher.getSmiles().then(
 			window.ketcher.getSmiles().then(
 				value => {document.getElementById('smiles').innerHTML = value
-					console.log('smiles', value);
 			});
-			// document.getElementById('drawBoard').innerHTML = '';
-			// document.getElementById('main').style.zIndex = 2;
-			// document.getElementById('drawBoard').style.zIndex = -1;
-			" style="position: absolute; top: 95.5%; left: 75%;
+			" style="position: absolute; top: 96%; left: 75%;
 				background-color: rgb(213, 213, 213);
 				outline: none; border: none; border-radius: 6px; width: 350px;
-				font-size: large; height: 35px;">Start AI retrosynthetic Route Planning</button>
-		<!-- <button onclick="
-			document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('c1ccccc1c1ccccc1');
-		">generate smiles</button> -->
+				font-size: large; height: 35px;">
+			Start AI retrosynthetic Route Planning
+		</button>
+
+
 	</div>
-	<div id="editMolecule" style="position: absolute;
+	<!-- <div id="editMolecule" style="position: absolute;
 		top:0; left: 0; width: 100%;  height: 100% ;z-index: -3; visibility: hidden;">
 		<div id="editMoleculeText" style="background-color: #eff3f6; width: 100%; height: 38px;
 			font-size: larger; margin-left: 10px;">
 
 		</div>
-		<!-- <iframe src=`${process.env.PUBLIC_URL}/embed.html` id=ifKetcher2 width=100% height="780"
-			style="position:absolute; top: 35px;"></iframe> -->
+		<iframe src=`${process.env.PUBLIC_URL}/embed.html` id=ifKetcher2 width=100% height="780"
+			style="position:absolute; top: 35px;"></iframe>
 		<button id="editMoleculeButton" onclick="
 			document.getElementById('ifKetcher2').contentWindow.ketcher.getSmiles().then(
 				value => {document.getElementById('editMoleculeSmiles').innerHTML = value
 				document.getElementById('ifKetcher2').contentWindow.ketcher.setMolecule('');
 			});
-			// document.getElementById('drawBoard').innerHTML = '';
-			// document.getElementById('main').style.zIndex = 2;
-			// document.getElementById('drawBoard').style.zIndex = -1;
+
 			" style="position: absolute; top: 96%; left: 80%; 
 				background-color: rgb(213, 213, 213);
 				outline: none; border: none; border-radius: 6px; width: 200px;
 				font-size: large; box-shadow: 0 3px #999;">Save changes</button>
-		<!-- <button onclick="
-			document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('c1ccccc1c1ccccc1');
-		">generate smiles</button> -->
-	</div>
+	</div> -->
+
 	<div id="main" style="visibility: visible; position: absolute; top:0; left:0; z-index: -1;"></div>
 	<div id="smiles" style="visibility: hidden;"></div>
-	<div id="editMoleculeSmiles" style="visibility: hidden;"></div>
+	<!-- <div id="editMoleculeSmiles" style="visibility: hidden;"></div> -->
 
 	<!--
       This HTML file is a template.

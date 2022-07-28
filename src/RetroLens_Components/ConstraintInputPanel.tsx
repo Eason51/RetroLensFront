@@ -29,7 +29,7 @@ import { Col } from 'react-bootstrap';
 const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
 	<label style={{ marginRight: '1em' }}>
 		<input type="checkbox" {...props}
-			style={{ marginRight: "5px" }}
+			style={{ marginRight: "5px", opacity: "1", position: "initial" }}
 		/>
 		{children}
 	</label>
@@ -56,23 +56,26 @@ const Input = styled('input')({
 class ConstraintInputPanel extends
 	React.Component<any, ConstraintInputPanelState> {
 
-	constructor(props: {}) {
+	constructor(props: any) {
 		super(props);
 
 		this.state = {
-			price: 0,
+			price: 1,
 			mssr: 3,
 			excludeSubstructure: null,
 			excludeSmiles: null,
 
 			isAll: false,
-			isPrice: false,
-			isStep: false,
+			isPrice: true,
+			isStep: true,
 			isSubstructure: false,
 			isMolecule: false,
 		}
 
 		this.constraintInputCallback = this.constraintInputCallback.bind(this);
+
+		props.updateConstraintFromPanel(this.state.price,
+			this.state.mssr, this.state.excludeSubstructure, this.state.excludeSmiles);
 	}
 
 
@@ -103,22 +106,30 @@ class ConstraintInputPanel extends
 	}
 
 	togglePrice = () => {
-		this.setState((state) => ({ isPrice: !state.isPrice }));
+		this.setState((state) => ({
+			isPrice: !state.isPrice,
+			price: 1
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleStep = () => {
-		this.setState((state) => ({ isStep: !state.isStep }));
+		this.setState((state) => ({
+			isStep: !state.isStep,
+			mssr: 3
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleSubstructure = () => {
-		this.setState((state) => ({ isSubstructure: !state.isSubstructure }));
+		this.setState((state) => ({ isSubstructure: !state.isSubstructure,
+			excludeSubstructure: null }));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleMolecule = () => {
-		this.setState((state) => ({ isMolecule: !state.isMolecule }));
+		this.setState((state) => ({ isMolecule: !state.isMolecule,
+			excludeSmiles: null }));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
@@ -244,10 +255,11 @@ class ConstraintInputPanel extends
 							</Checkbox>
 						</Col> */}
 
-						<Checkbox checked={this.state.isPrice} onChange={this.togglePrice}>
+						<Checkbox disabled={true} checked={true} onChange={this.togglePrice}
+						>
 							Price Threshold
 						</Checkbox>
-						<Checkbox checked={this.state.isStep} onChange={this.toggleStep}>
+						<Checkbox disabled={true} checked={true} onChange={this.toggleStep}>
 							Maximum Steps
 						</Checkbox>
 						<Checkbox checked={this.state.isSubstructure} onChange={this.toggleSubstructure}>
