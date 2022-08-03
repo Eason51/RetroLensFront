@@ -23,7 +23,7 @@ import { parseRoute } from "../Helpers/helpers";
 import { AIResult } from "../RetroLens_Components/AIsucess";
 import { Card, MuiThemeProvider, Typography } from '@material-ui/core';
 import { Box, Button } from "@mui/material";
-import { style, width } from '@mui/system';
+
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
@@ -68,6 +68,9 @@ const NoMaxWidthTooltip = styled(({ className, ...props }) => (
 	},
 });
 
+
+const { innerWidth: width, innerHeight: height } = window;
+const rowh = height / 23;
 
 
 const RetroTree = (props) => {
@@ -167,7 +170,10 @@ const RetroTree = (props) => {
 				"Accept": "application/json",
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify(graph.cfg.data)
+			body: JSON.stringify({
+				graph: graph.cfg.data,
+				constraints: currentConstraints
+			})
 		}).then((response) =>
 			response.json())
 			.then((responseJson) => {
@@ -208,7 +214,7 @@ const RetroTree = (props) => {
 	const reopenReviseMenu = () => {
 		setReviseMenuCollapsed(false);
 		setSideButtonVisibility("hidden");
-		graph.changeSize(1080, 670);
+		graph.changeSize(width * 0.7315, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 	}
@@ -226,7 +232,7 @@ const RetroTree = (props) => {
 		);
 		setReviseMenuCollapsed(false);
 		setSideButtonVisibility("hidden");
-		graph.changeSize(1080, 670);
+		graph.changeSize(width * 0.7315, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 	}
@@ -234,7 +240,7 @@ const RetroTree = (props) => {
 	const applyAlternative = () => {
 		setSideMenuCollapsed(true);
 		setSideButtonVisibility("visible")
-		graph.changeSize(1400, 679);
+		graph.changeSize(width * 0.95, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 		setSideButtonVisibility("hidden");
@@ -243,7 +249,7 @@ const RetroTree = (props) => {
 	const cancelAlternative = () => {
 		setSideMenuCollapsed(true);
 		setSideButtonVisibility("visible")
-		graph.changeSize(1400, 679);
+		graph.changeSize(width * 0.95, rowh * 18.9);
 		if (previousGraph == null)
 			return;
 		globalContext.updateTreeData(previousGraph);
@@ -254,7 +260,7 @@ const RetroTree = (props) => {
 
 		setReviseMenuCollapsed(true);
 		setSideButtonVisibility("visible")
-		graph.changeSize(1400, 679);
+		graph.changeSize(width * 0.95, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 	}
@@ -308,7 +314,7 @@ const RetroTree = (props) => {
 					setSideButtonVisibility("hidden")
 					previousGraph = JSON.parse(JSON.stringify(graph.cfg.data));
 					console.log("previousGraph", previousGraph);
-					graph.changeSize(1080, 670);
+					graph.changeSize(width * 0.7315, rowh * 18.9);
 					graph.fitView();
 					graph.render();
 
@@ -583,7 +589,7 @@ const RetroTree = (props) => {
 						{
 							type: 'tooltip',
 							formatText(model) {
-								return "Edit the disconnection"
+								return "Edit reaction"
 							},
 							shouldBegin(e) {
 								const element = e.target;
@@ -771,12 +777,12 @@ const RetroTree = (props) => {
 
 
 	return (
-		<div style={{ width: "1400px", height: "90%", position: "relative", left: "48px" }} ref={ref}>
+		<div style={{ width: width * 0.95, height: rowh * 18.9, position: "relative", left: "2.5%" }} ref={ref}>
 			{/* <button onClick={updateData}>update data</button> */}
 
 			<ProSidebar style={{
 				position: "absolute", left: "80%", top: "0%",
-				height: "756px",
+				height: rowh * 21,
 				// transform: "translate(0, -10%)"
 			}}
 				collapsed={sideMenuCollapsed}
@@ -820,7 +826,7 @@ const RetroTree = (props) => {
 
 			<ProSidebar id="reviseSideBar" style={{
 				position: "absolute", left: "80%", top: "0%",
-				height: "756px",
+				height: rowh * 21,
 				// transform: "translate(0, -10%)"
 				margin: "0",
 				padding: "0",
@@ -911,7 +917,7 @@ const RetroTree = (props) => {
 
 			<Modal id="modal" show={showConstraintInput} centered size="lg">
 				<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
-					Input Constraint for AI RetroSynthetic Route Planning
+					Constraints for AI RetroSynthetic Route Planning
 				</div>
 
 				<div style={{ margin: "40px", marginTop: "20px" }}>
@@ -942,7 +948,10 @@ const RetroTree = (props) => {
 									"Accept": "application/json",
 									"Content-Type": "application/json"
 								},
-								body: JSON.stringify(graph.cfg.data)
+								body: JSON.stringify({
+									graph: graph.cfg.data,
+									constraints: constraints
+								})
 							}).then((response) =>
 								response.json())
 								.then((responseJson) => {

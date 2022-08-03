@@ -60,14 +60,14 @@ class ConstraintInputPanel extends
 		super(props);
 
 		this.state = {
-			price: 1,
+			price: 1000,
 			mssr: 3,
 			excludeSubstructure: null,
 			excludeSmiles: null,
 
 			isAll: false,
-			isPrice: true,
-			isStep: true,
+			isPrice: false,
+			isStep: false,
 			isSubstructure: false,
 			isMolecule: false,
 		}
@@ -108,7 +108,7 @@ class ConstraintInputPanel extends
 	togglePrice = () => {
 		this.setState((state) => ({
 			isPrice: !state.isPrice,
-			price: 1
+			price: 1000
 		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
@@ -122,25 +122,47 @@ class ConstraintInputPanel extends
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleSubstructure = () => {
-		this.setState((state) => ({ isSubstructure: !state.isSubstructure,
-			excludeSubstructure: null }));
+		this.setState((state) => ({
+			isSubstructure: !state.isSubstructure,
+			excludeSubstructure: null
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 	toggleMolecule = () => {
-		this.setState((state) => ({ isMolecule: !state.isMolecule,
-			excludeSmiles: null }));
+		this.setState((state) => ({
+			isMolecule: !state.isMolecule,
+			excludeSmiles: null
+		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
 	}
 
+	componentDidMount() {
+		const price = this.state.isPrice ? this.state.price : null;
+		const mssr = this.state.isStep ? this.state.mssr : null;
+		const excludeSubstructure = (this.state.isSubstructure
+			&& this.state.excludeSubstructure !== "") ? this.state.excludeSubstructure : null;
+		const excludeSmiles = (this.state.isMolecule && this.state.excludeSmiles !== "")
+			? this.state.excludeSmiles : null;
 
+		this.props.updateConstraintFromPanel(price, mssr, excludeSubstructure, excludeSmiles);
+	}
 
 	componentDidUpdate(prevProps: {}, prevState: {}, snapshot: {}) {
 
 		if (this.state != prevState) {
-			this.props.updateConstraintFromPanel(this.state.price,
-				this.state.mssr, this.state.excludeSubstructure, this.state.excludeSmiles);
+			// this.props.updateConstraintFromPanel(this.state.price,
+			// 	this.state.mssr, this.state.excludeSubstructure, this.state.excludeSmiles);
+
+			const price = this.state.isPrice ? this.state.price : null;
+			const mssr = this.state.isStep ? this.state.mssr : null;
+			const excludeSubstructure = (this.state.isSubstructure
+				&& this.state.excludeSubstructure !== "") ? this.state.excludeSubstructure : null;
+			const excludeSmiles = (this.state.isMolecule && this.state.excludeSmiles !== "")
+				? this.state.excludeSmiles : null;
+
+			this.props.updateConstraintFromPanel(price, mssr, excludeSubstructure, excludeSmiles);
 		}
 
 	}
@@ -180,8 +202,10 @@ class ConstraintInputPanel extends
 					label={"Price Threshold for Molecules"}
 					lowerLimit={1}
 					higherLimit={1000}
-					defaultValue={1}
+					defaultValue={1000}
 					callback={this.constraintInputCallback}
+					id={1}
+					key={1}
 				/>
 			</Grid>
 
@@ -192,6 +216,8 @@ class ConstraintInputPanel extends
 				higherLimit={15}
 				defaultValue={3}
 				callback={this.constraintInputCallback}
+				id={2}
+				key={2}
 			/>
 		</Grid>
 
@@ -255,11 +281,11 @@ class ConstraintInputPanel extends
 							</Checkbox>
 						</Col> */}
 
-						<Checkbox disabled={true} checked={true} onChange={this.togglePrice}
+						<Checkbox checked={this.state.isPrice} onChange={this.togglePrice}
 						>
 							Price Threshold
 						</Checkbox>
-						<Checkbox disabled={true} checked={true} onChange={this.toggleStep}>
+						<Checkbox checked={this.state.isStep} onChange={this.toggleStep}>
 							Maximum Steps
 						</Checkbox>
 						<Checkbox checked={this.state.isSubstructure} onChange={this.toggleSubstructure}>

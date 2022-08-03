@@ -43,24 +43,24 @@ class EmbedConstraintInputPanel extends
 		super(props);
 
 		this.state = {
-			price: ("price" in props.currentConstraints && props.currentConstraints.price !== 0) ?
-				props.currentConstraints.price : 1,
-			mssr: ("mssr" in props.currentConstraints && props.currentConstraints.mssr) ?
+			price: ("price" in props.currentConstraints && props.currentConstraints.price !== null) ?
+				props.currentConstraints.price : 1000,
+			mssr: ("mssr" in props.currentConstraints && props.currentConstraints.mssr !== null) ?
 				props.currentConstraints.mssr : 3,
 			excludeSubstructure: ("excludeSubstructure" in props.currentConstraints
-				&& props.currentConstraints.excludeSubstructure) ?
+				&& props.currentConstraints.excludeSubstructure !== null) ?
 				props.currentConstraints.excludeSubstructure : null,
 			excludeSmiles: ("excludeSmiles" in props.currentConstraints
-				&& props.currentConstraints.excludeSmiles) ?
+				&& props.currentConstraints.excludeSmiles != null) ?
 				props.currentConstraints.excludeSmiles : null,
 
 			isAll: false,
-			isPrice: true,
-			isStep: true,
+			isPrice: "price" in props.currentConstraints && props.currentConstraints.price !== null,
+			isStep: "mssr" in props.currentConstraints && props.currentConstraints.mssr !== null,
 			isSubstructure: "excludeSubstructure" in props.currentConstraints
-				&& props.currentConstraints.excludeSubstructure,
+				&& props.currentConstraints.excludeSubstructure !== null,
 			isMolecule: "excludeSmiles" in props.currentConstraints
-				&& props.currentConstraints.excludeSmiles,
+				&& props.currentConstraints.excludeSmiles !== null,
 		}
 
 		this.constraintInputCallback = this.constraintInputCallback.bind(this);
@@ -96,7 +96,7 @@ class EmbedConstraintInputPanel extends
 	togglePrice = () => {
 		this.setState((state) => ({
 			isPrice: !state.isPrice,
-			price: 1
+			price: 1000
 		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
@@ -104,7 +104,7 @@ class EmbedConstraintInputPanel extends
 	toggleStep = () => {
 		this.setState((state) => ({
 			isStep: !state.isStep,
-			price: 3
+			mssr: 3,
 		}));
 		if (this.state.isAll)
 			this.setState((state) => ({ isAll: !state.isAll }));
@@ -131,8 +131,18 @@ class EmbedConstraintInputPanel extends
 	componentDidUpdate(prevProps: {}, prevState: {}, snapshot: {}) {
 
 		if (this.state != prevState) {
-			this.props.updateConstraintFromPanel(this.state.price,
-				this.state.mssr, this.state.excludeSubstructure, this.state.excludeSmiles);
+
+			const price = this.state.isPrice ? this.state.price : null;
+			const mssr = this.state.isStep ? this.state.mssr : null;
+			const excludeSubstructure = (this.state.isSubstructure
+				&& this.state.excludeSubstructure !== "") ? this.state.excludeSubstructure : null;
+			const excludeSmiles = (this.state.isMolecule && this.state.excludeSmiles !== "")
+				? this.state.excludeSmiles : null;
+
+
+			// this.props.updateConstraintFromPanel(this.state.price,
+			// 	this.state.mssr, this.state.excludeSubstructure, this.state.excludeSmiles);
+			this.props.updateConstraintFromPanel(price, mssr, excludeSubstructure, excludeSmiles);
 		}
 
 	}
@@ -176,6 +186,8 @@ class EmbedConstraintInputPanel extends
 					higherLimit={1000}
 					defaultValue={this.state.price}
 					callback={this.constraintInputCallback}
+					id={1}
+					key={1}
 				/>
 			</Grid>
 
@@ -186,6 +198,8 @@ class EmbedConstraintInputPanel extends
 				higherLimit={15}
 				defaultValue={this.state.mssr}
 				callback={this.constraintInputCallback}
+				id={2}
+				key={2}
 			/>
 		</Grid>
 
@@ -251,10 +265,10 @@ class EmbedConstraintInputPanel extends
 							</Checkbox>
 						</Col> */}
 
-						<Checkbox disabled={true} checked={true} onChange={this.togglePrice}>
+						<Checkbox checked={this.state.isPrice} onChange={this.togglePrice}>
 							Price Threshold
 						</Checkbox>
-						<Checkbox disabled={true} checked={true} onChange={this.toggleStep}>
+						<Checkbox checked={this.state.isStep} onChange={this.toggleStep}>
 							Maximum Steps
 						</Checkbox>
 						<Checkbox checked={this.state.isSubstructure} onChange={this.toggleSubstructure}>

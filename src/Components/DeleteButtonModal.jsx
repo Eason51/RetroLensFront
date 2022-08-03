@@ -15,7 +15,7 @@ function DeleteButtonModal(props) {
 				padding: "10px 20px", paddingTop: "20px"
 			}}>
 				<text style={{ fontSize: "35px" }}>
-					Edit disconnection
+					Edit reaction
 				</text>
 			</div>
 			<div style={{
@@ -23,7 +23,7 @@ function DeleteButtonModal(props) {
 				padding: "10px 20px", paddingBottom: "30px", paddingLeft: "22px"
 			}}>
 				<text style={{ fontSize: "20px" }}>
-					By modifying this disconnection the associated subtree will be lost once edited.
+					By modifying this reaction the associated subtree will be lost once edited.
 				</text>
 			</div>
 
@@ -55,7 +55,7 @@ function DeleteButtonModal(props) {
 						graph.render();
 					}
 
-					document.getElementById("drawBoardText").innerHTML = "Please edit the disconnection."
+					document.getElementById("drawBoardText").innerHTML = "Please edit the reaction."
 					document.getElementById("drawBoardButton").innerHTML = "Save changes"
 					document.getElementById("drawBoardButton").style.width = "200px";
 					document.getElementById("drawBoardButton").style.left = "80%";

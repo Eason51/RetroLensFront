@@ -26,6 +26,7 @@
 
 	<script defer="defer" src="%PUBLIC_URL%/standalone/static/js/main.027562ee.js"></script>
 	<link href="%PUBLIC_URL%/standalone/static/css/main.8e693d51.css" rel="stylesheet">
+	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
 </head>
 
 <body id="body">
@@ -34,23 +35,24 @@
 
 
 	<div id="drawBoard" style="width: 100%;  height: 100% ;z-index: 1;">
-		<div id="drawBoardText" style="background-color: #eff3f6; width: 100%; height: 38px;
+		<div id="drawBoardText" style="background-color: #eff3f6; width: 100%; height: 5%;
 			font-size: larger; margin-left: 10px;">
 			Draw the target molecule to perform a retrosynthetic route planning.
 		</div>
 		<!-- <iframe src="" id=ifKetcher width=100% height="780"
 			style="position:absolute; top: 35px;"></iframe> -->
-		<div id="root" width=100% style="position:absolute; top: 35px; height: 780px">
+		<div id="root" width=100% style="position:absolute; top: 5%; height: 95%">
 
 		</div>
 		<button id="drawBoardButton" onclick="
+
 			window.ketcher.getSmiles().then(
 				value => {document.getElementById('smiles').innerHTML = value
 			});
 			" style="position: absolute; top: 96%; left: 75%;
 				background-color: rgb(213, 213, 213);
-				outline: none; border: none; border-radius: 6px; width: 350px;
-				font-size: large; height: 35px;">
+				outline: none; border: none; border-radius: 6px; width: 23%;
+				font-size: large; height: 4%;">
 			Start AI retrosynthetic Route Planning
 		</button>
 

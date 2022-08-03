@@ -66,10 +66,10 @@ function MainInterface() {
 		}}>
 			<div>
 				{/* <MainBlock /> */}
-				<TreeInterface RetroTreeComponent={RetroTreeComponent} />
+					<TreeInterface RetroTreeComponent={RetroTreeComponent} />
 
 				<Modal id="modal" show={show} centered size="lg">
-					<div style={{textAlign: "center", paddingTop: "10px", fontSize: "25px"}}>
+					<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
 						Input Constraint for AI RetroSynthetic Route Planning
 					</div>
 
@@ -82,9 +82,9 @@ function MainInterface() {
 								<div>
 
 									<Button style={{ width: "50%" }}
-									onClick={() => {
-										setShow(false);
-									}}>
+										onClick={() => {
+											setShow(false);
+										}}>
 										cancel
 									</Button>
 
@@ -103,14 +103,17 @@ function MainInterface() {
 											document.getElementById('drawBoard').style.visibility = 'hidden';
 
 											// console.log("initialize", document.getElementById("smiles").innerHTML);
-											
+
 											fetch(globalContext.serverIp.concat("initialize"), {
 												method: "POST",
 												headers: {
 													"Accept": "application/json",
 													"Content-Type": "application/json"
 												},
-												body: JSON.stringify({ smiles: document.getElementById("smiles").innerHTML })
+												body: JSON.stringify({
+													smiles: document.getElementById("smiles").innerHTML,
+													constraints: constraints
+												})
 											}).then((response) =>
 												response.json())
 												.then((responseJson) => {
@@ -122,7 +125,7 @@ function MainInterface() {
 													// globalContext.updateTreeData(treeData2);
 													setRetroTreeComponent([<RetroTree constraints={constraints} />]);
 													document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
-												
+
 													// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
 													window.ketcher.setMolecule('');
 												})

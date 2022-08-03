@@ -18,7 +18,7 @@ interface ConstraintInputState {
 let valueChanged: boolean = false;
 
 class ConstraintInput extends
-	React.Component<{ label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any },
+	React.Component<{ label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any, id: number },
 	ConstraintInputState> {
 
 	label: string;
@@ -26,8 +26,10 @@ class ConstraintInput extends
 	higherLimit: number;
 	callback: any
 
-	constructor(props: { label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any }) {
+	constructor(props: { label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any, id:number }) {
 		super(props);
+
+		// console.log("props", props);
 
 		this.state = {
 			value: props.defaultValue
