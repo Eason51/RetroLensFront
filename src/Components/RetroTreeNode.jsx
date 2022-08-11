@@ -225,63 +225,138 @@ G6.registerNode(
 				return doc.lastChild;
 			}
 
-			window
-				.initRDKitModule()
-				.then(function (RDKit) {
-					// console.log("RDKit version: " + RDKit.version());
-					var smiles = cfg.smiles;
-					var mol = RDKit.get_mol(smiles);
-					var svg = mol.get_svg();
-
-					var svgObject = createSVGElement(svg);
-					svgObject.setAttribute("height", "115");
-					svgObject.setAttribute("width", "134");
-
-					var svgString = new XMLSerializer().serializeToString(svgObject);
-
-					// var objectParser = new DOMParser();
-					// var svgObject = objectParser.parseFromString(svg, "image/svg+xml");
-					// console.log("svg", svgObject);
-
-					// let blob= new Blob([svg], {type: "image/svg+xml"});
-					// let url = URL.createObjectURL(blob);
-
-
-					// svgObject.setAttribute("height", 115);
-					// svgObject.setAttribute("width", 134);
-					// var svgString = new XMLSerializer().serializeToString(svgObject);
-
-					var base64 = btoa(svg);
-					var imgSource = `data:image/svg+xml;base64,${base64}`;
-
-					group.addShape("image", {
-						attrs: {
-							x: 1,
-							y: 1,
-							width: 134,
-							height: 115,
-							cursor: cursorShape,
-							img: imgSource
-						},
-						name: "molecule"
-					})
-
-					// group.addShape("dom", {
-					// 	attrs: {
-					// 		x: 1,
-					// 		y: 1,
-					// 		width: 134,
-					// 		height: 115,
-					// 		cursor: cursorShape,
-					// 		html: svgString
-					// 	},
-					// 	name: "molecule"
-					// })
-
+			if ("imageSource" in cfg && cfg.imageSource !== "") {
+				group.addShape("image", {
+					attrs: {
+						x: 1,
+						y: 1,
+						width: 134,
+						height: 115,
+						cursor: cursorShape,
+						img: cfg.imageSource
+					},
+					name: "molecule"
 				})
-				.catch((e) => {
-					console.log("rdkit error", e);
-				});
+			}
+			else {
+				window
+					.initRDKitModule()
+					.then(function (RDKit) {
+						// console.log("RDKit version: " + RDKit.version());
+						var smiles = cfg.smiles;
+						var mol = RDKit.get_mol(smiles);
+						var svg = mol.get_svg();
+
+						var svgObject = createSVGElement(svg);
+						svgObject.setAttribute("height", "115");
+						svgObject.setAttribute("width", "134");
+
+						var svgString = new XMLSerializer().serializeToString(svgObject);
+
+						// var objectParser = new DOMParser();
+						// var svgObject = objectParser.parseFromString(svg, "image/svg+xml");
+						// console.log("svg", svgObject);
+
+						// let blob= new Blob([svg], {type: "image/svg+xml"});
+						// let url = URL.createObjectURL(blob);
+
+
+						// svgObject.setAttribute("height", 115);
+						// svgObject.setAttribute("width", 134);
+						// var svgString = new XMLSerializer().serializeToString(svgObject);
+
+						var base64 = btoa(svg);
+						var imgSource = `data:image/svg+xml;base64,${base64}`;
+
+						group.addShape("image", {
+							attrs: {
+								x: 1,
+								y: 1,
+								width: 134,
+								height: 115,
+								cursor: cursorShape,
+								img: imgSource
+							},
+							name: "molecule"
+						})
+
+						cfg.imageSource = imgSource
+
+						// group.addShape("dom", {
+						// 	attrs: {
+						// 		x: 1,
+						// 		y: 1,
+						// 		width: 134,
+						// 		height: 115,
+						// 		cursor: cursorShape,
+						// 		html: svgString
+						// 	},
+						// 	name: "molecule"
+						// })
+
+					})
+					.catch((e) => {
+						console.log("rdkit error", e);
+					});
+			}
+
+			// window
+			// 	.initRDKitModule()
+			// 	.then(function (RDKit) {
+			// 		// console.log("RDKit version: " + RDKit.version());
+			// 		var smiles = cfg.smiles;
+			// 		var mol = RDKit.get_mol(smiles);
+			// 		var svg = mol.get_svg();
+
+			// 		var svgObject = createSVGElement(svg);
+			// 		svgObject.setAttribute("height", "115");
+			// 		svgObject.setAttribute("width", "134");
+
+			// 		var svgString = new XMLSerializer().serializeToString(svgObject);
+
+			// 		// var objectParser = new DOMParser();
+			// 		// var svgObject = objectParser.parseFromString(svg, "image/svg+xml");
+			// 		// console.log("svg", svgObject);
+
+			// 		// let blob= new Blob([svg], {type: "image/svg+xml"});
+			// 		// let url = URL.createObjectURL(blob);
+
+
+			// 		// svgObject.setAttribute("height", 115);
+			// 		// svgObject.setAttribute("width", 134);
+			// 		// var svgString = new XMLSerializer().serializeToString(svgObject);
+
+			// 		var base64 = btoa(svg);
+			// 		var imgSource = `data:image/svg+xml;base64,${base64}`;
+
+			// 		group.addShape("image", {
+			// 			attrs: {
+			// 				x: 1,
+			// 				y: 1,
+			// 				width: 134,
+			// 				height: 115,
+			// 				cursor: cursorShape,
+			// 				img: imgSource
+			// 			},
+			// 			name: "molecule"
+			// 		})
+
+			// 		// group.addShape("dom", {
+			// 		// 	attrs: {
+			// 		// 		x: 1,
+			// 		// 		y: 1,
+			// 		// 		width: 134,
+			// 		// 		height: 115,
+			// 		// 		cursor: cursorShape,
+			// 		// 		html: svgString
+			// 		// 	},
+			// 		// 	name: "molecule"
+			// 		// })
+
+			// 	})
+			// 	.catch((e) => {
+			// 		console.log("rdkit error", e);
+			// 	});
 
 
 			// group.addShape("image", {
@@ -446,8 +521,9 @@ G6.registerNode(
 			}
 
 
+			// console.log("cfg", cfg);
 
-			if (hasChildren || AIFailed) {
+			if ((hasChildren || AIFailed) && (("isAI" in cfg) == false) || (cfg.isAI == false)) {
 				group.addShape('rect', {
 					attrs: {
 						y: 137,
@@ -461,13 +537,28 @@ G6.registerNode(
 					name: 'Buttons',
 				});
 
+				let lineWidth = 4;
+				let topPointY = 120;
+				if (AIFailed) {
+					lineWidth = 1.1;
+					topPointY = 118;
+				}
+				else if (hasChildren) {
+					cfg.children.forEach(child => {
+						if ("isAI" in child && child.isAI == true) {
+							lineWidth = 1.1;
+							topPointY = 118;
+						}
+					});
+				}
+
 				group.addShape("path", {
 					attrs: {
 						stroke: "#0f62fe",
-						lineWidth: 1.1,
+						lineWidth: lineWidth,
 						path: [
 							["M", 68, 137],
-							["L", 68, 117],
+							["L", 68, topPointY],
 							["Z"]
 						]
 					},
@@ -478,10 +569,10 @@ G6.registerNode(
 				group.addShape("path", {
 					attrs: {
 						stroke: "#0f62fe",
-						lineWidth: 1.1,
+						lineWidth: lineWidth,
 						path: [
 							["M", 74, 125],
-							["L", 68, 117],
+							["L", 68, topPointY],
 							["L", 62, 125],
 							["Z"]
 						],

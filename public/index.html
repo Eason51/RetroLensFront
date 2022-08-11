@@ -26,7 +26,8 @@
 
 	<script defer="defer" src="%PUBLIC_URL%/standalone/static/js/main.027562ee.js"></script>
 	<link href="%PUBLIC_URL%/standalone/static/css/main.8e693d51.css" rel="stylesheet">
-	<script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+	<!-- <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script> -->
+	<script src="RDKit_minimal.js"></script>
 </head>
 
 <body id="body">
@@ -46,7 +47,10 @@
 		</div>
 		<button id="drawBoardButton" onclick="
 
-			window.ketcher.getSmiles().then(
+			// console.log('ketcher', window.ketcher.editor);
+
+
+			window.ketcher.getSmiles(true).then(
 				value => {document.getElementById('smiles').innerHTML = value
 			});
 			" style="position: absolute; top: 96%; left: 75%;

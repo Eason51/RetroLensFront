@@ -22,7 +22,7 @@ import "./sidebar.scss";
 import { parseRoute } from "../Helpers/helpers";
 import { AIResult } from "../RetroLens_Components/AIsucess";
 import { Card, MuiThemeProvider, Typography } from '@material-ui/core';
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
@@ -39,6 +39,8 @@ import { styled } from '@mui/material/styles';
 import { StyleSheet, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { WeightInputPanel } from './WeightInputPanel';
 import useRefs from "react-use-refs";
+import { FailureSmilesModal } from './FailureSmilesModal';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 
 
@@ -101,6 +103,9 @@ const RetroTree = (props) => {
 		associatedSubtreeConfidence: null
 	});
 	const [showWeightInput, setShowWeightInput] = useState(false);
+	const [showLoading, setShowLoading] = useState(false);
+	const [loadingText, setLoadingText] = useState("");
+
 
 	// const stateRef = useRef();
 	// stateRef.current = savedConstraints;
@@ -136,7 +141,7 @@ const RetroTree = (props) => {
 	const globalContext = useContext(GlobalContext);
 
 	const exitDrawBoard = () => {
-		setTimeout(updateDrawBoardOutput, 200);
+		setTimeout(updateDrawBoardOutput, 1000);
 	}
 
 	const updateDrawBoardOutput = () => {
@@ -145,46 +150,83 @@ const RetroTree = (props) => {
 		const currentSmiles = document.getElementById("smiles").innerHTML;
 		// console.log("disconnection", document.getElementById("smiles").innerHTML);
 		const smilesArr = currentSmiles.split(".");
-		let id = "";
-		model.children = [];
-		smilesArr.forEach(smiles => {
-			id = `n-${Math.random()}`;
-			model.children.push({
-				smiles: smiles,
-				handledByAI: true,
-				id
-			});
-		});
-
-		graph.updateChildren(model.children, model.id);
-		globalContext.updateTreeData(graph.cfg.data);
-		graph.read(graph.cfg.data);
 
 
-		const currentConstraints = stateRef.current;
-		console.log("currentConstraints", currentConstraints);
+		window
+			.initRDKitModule()
+			.then(function (RDKit) {
 
-		fetch(globalContext.serverIp.concat("checkRXN"), {
-			method: "POST",
-			headers: {
-				"Accept": "application/json",
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				graph: graph.cfg.data,
-				constraints: currentConstraints
+				let failureSmiles = "";
+
+				smilesArr.forEach(smiles => {
+					var mol = RDKit.get_mol(smiles);
+					if (mol.is_valid() == false)
+						failureSmiles = smiles
+				})
+
+				if (failureSmiles !== "") {
+
+					setModelArr([<FailureSmilesModal model={model}
+						graph={graph} setSideButtonVisibility={setSideButtonVisibility}
+						setModelArr={setModelArr} failureSmiles={failureSmiles}
+						currentSmiles={currentSmiles}
+					/>]);
+				}
+				else {
+
+					let id = "";
+					model.children = [];
+
+					smilesArr.forEach(smiles => {
+						id = `n-${Math.random()}`;
+						model.children.push({
+							smiles: smiles,
+							handledByAI: true,
+							id
+						});
+					});
+
+					graph.updateChildren(model.children, model.id);
+					globalContext.updateTreeData(graph.cfg.data);
+					graph.read(graph.cfg.data);
+
+
+					const currentConstraints = stateRef.current;
+					console.log("currentConstraints", currentConstraints);
+
+					setShowLoading(true);
+					setLoadingText("Analysing Reactants");
+
+					fetch(globalContext.serverIp.concat("checkRXN"), {
+						method: "POST",
+						headers: {
+							"Accept": "application/json",
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							graph: graph.cfg.data,
+							constraints: currentConstraints
+						})
+					}).then((response) =>
+						response.json())
+						.then((responseJson) => {
+							setShowLoading(false);
+							console.log("checkRXN_response", responseJson);
+							globalContext.updateTreeData(responseJson);
+							graph.read(responseJson);
+						})
+						.catch(err => {
+							console.log("fetching error")
+							console.log(err);
+						});
+				}
+
+
 			})
-		}).then((response) =>
-			response.json())
-			.then((responseJson) => {
-				console.log("checkRXN_response", responseJson);
-				globalContext.updateTreeData(responseJson);
-				graph.read(responseJson);
-			})
-			.catch(err => {
-				console.log("fetching error")
-				console.log(err);
+			.catch((e) => {
+				console.log("render error", e);
 			});
+
 	}
 
 
@@ -286,6 +328,7 @@ const RetroTree = (props) => {
 			const name = target.get("name");
 
 			const model = item.getModel();
+			console.log("node clicked", model);
 			selectedModel = model;
 			selectedModelParent = item.get("parent");
 
@@ -308,7 +351,8 @@ const RetroTree = (props) => {
 				// console.log("selectedModel", selectedModel);
 
 				setRouteList([]);
-				if ("AIRoutes" in selectedModel) {
+				if ("AIRoutes" in selectedModel && "handledByAI" in selectedModel
+					&& selectedModel.handledByAI == true) {
 
 					setSideMenuCollapsed(false);
 					setSideButtonVisibility("hidden")
@@ -337,17 +381,30 @@ const RetroTree = (props) => {
 						route => {
 
 							const id = 'selectedDropDownItem' + selectedModel.AIRoutes.indexOf(route);
-
+							console.log("route", route);
 							const DropdownItemComponent =
 								<DropdownItem
 									id={id}
-									style={{ height: "60px", color: "black" }} size="lg">
+									style={{ height: "80px", color: "black" }} size="lg">
 									<div style={{
 										fontFamily: "consolas",
 										fontSize: "20px", justifyItems: "start",
 										position: "relative", top: "10px",
 									}}>
 										<Text>Alternative {routeCount}</Text>
+
+									</div>
+
+									<div style={{
+										fontFamily: "consolas",
+										fontSize: "12px", justifyItems: "start",
+										position: "relative", top: "10px"
+									}}>
+										<Text>
+											<div>
+												<span>Confidence: {route.confidence}  </span>
+											</div>
+										</Text>
 
 									</div>
 								</DropdownItem>
@@ -372,7 +429,13 @@ const RetroTree = (props) => {
 										forceUpdate();
 
 										selectedModel.children = [];
-										selectedModel.children.push(selectedRoute);
+										if ("children" in selectedRoute) {
+											selectedRoute.children.forEach(child => {
+												selectedModel.children.push(child)
+											})
+										}
+										selectedModel.confidence = route.confidence;
+										// selectedModel.children.push(selectedRoute);
 										globalContext.updateTreeData(graph.cfg.data);
 										graph.read(graph.cfg.data);
 
@@ -568,7 +631,8 @@ const RetroTree = (props) => {
 						{
 							type: 'tooltip',
 							formatText(model) {
-								if ("AIRoutes" in model) {
+								if ("handledByAI" in model && model.handledByAI == true &&
+									"AIRoutes" in model && model.AIRoutes.length != 0) {
 									const outputString = (model.AIRoutes.length + " AI generated routes"
 										+ "<br/>(Alternative " + (model.AIRoutesIndex + 1) + " is currently displayed)");
 
@@ -685,29 +749,36 @@ const RetroTree = (props) => {
 							},
 							shouldBegin(e) {
 
-								const element = e.target;
-								if (element.get("name") === "container" ||
-									element.get("name") === "Image" ||
-									// element.get("name") === "Text" ||
-									element.get("name") === "molecule") {
+								return false;
 
-									const model = e.item.getModel();
-									if (("isAvailable" in model && model.isAvailable == false
-										|| "notAvailable" in model && model.notAvailable)
-										&& "failureCause" in model) {
-										// console.log("display");
-										return true;
-									}
-									else
-										return false;
-								}
-								else
-									return false;
+								// const element = e.target;
+								// if (element.get("name") === "container" ||
+								// 	element.get("name") === "Image" ||
+								// 	// element.get("name") === "Text" ||
+								// 	element.get("name") === "molecule") {
+
+								// 	const model = e.item.getModel();
+								// 	if (("isAvailable" in model && model.isAvailable == false
+								// 		|| "notAvailable" in model && model.notAvailable)
+								// 		&& "failureCause" in model) {
+								// 		// console.log("display");
+								// 		return true;
+								// 	}
+								// 	else
+								// 		return false;
+								// }
+								// else
+								// 	return false;
 							},
 							offset: 10,
 						},
-						"drag-canvas",
-						"zoom-canvas"
+						{
+							type: "zoom-canvas",
+							minZoom: 0.0001
+						},
+						{
+							type: "drag-canvas"
+						}
 					],
 				},
 				defaultEdge: {
@@ -715,7 +786,7 @@ const RetroTree = (props) => {
 					style: {
 						// stroke: '#0f62fe',
 						// startArrow: true,
-						offset: 20
+						offset: 25
 					}
 				},
 				// edgeStateStyles: {
@@ -762,6 +833,7 @@ const RetroTree = (props) => {
 		globalContext.updateTreeGraph(graph);
 		graph.data(data);
 		graph.render();
+		graph.setMinZoom(0.0001);
 
 	}, [])
 
@@ -790,7 +862,7 @@ const RetroTree = (props) => {
 				<SidebarHeader>
 					<Row>
 						<div style={{
-							height: "60px", fontSize: "22px", display: "flex",
+							height: rowh * 2, fontSize: "22px", display: "flex",
 							alignContent: "center", alignItems: "center", marginLeft: "40px",
 							color: "black"
 						}}>
@@ -812,11 +884,11 @@ const RetroTree = (props) => {
 				<SidebarFooter>
 
 					<Button variant='contained' size='large' onClick={cancelAlternative}
-						style={{ height: "60px", width: "50%", backgroundColor: "grey" }}
+						style={{ height: rowh * 2, width: "50%", backgroundColor: "grey" }}
 					>Cancel
 					</Button>
 					<Button variant='contained' size='large' onClick={applyAlternative}
-						style={{ height: "60px", width: "50%" }}
+						style={{ height: rowh * 2, width: "50%" }}
 					>Apply
 					</Button>
 
@@ -836,14 +908,14 @@ const RetroTree = (props) => {
 				<SidebarHeader>
 					<Row>
 						<div style={{
-							height: "60px", fontSize: "22px", display: "flex",
+							height: rowh * 2, fontSize: "22px", display: "flex",
 							alignContent: "center", alignItems: "center", marginLeft: "20px",
 							color: "black"
 						}}>
 							Recommended Revise Step
 						</div>
 						<div style={{
-							height: "60px", fontSize: "22px", display: "flex",
+							height: rowh * 2, fontSize: "22px", display: "flex",
 							alignContent: "center", alignItems: "center"
 						}}>
 							<NoMaxWidthTooltip
@@ -889,7 +961,7 @@ const RetroTree = (props) => {
 				</SidebarContent>
 				<SidebarFooter>
 					<Button variant='contained' size='large' onClick={closeRevise}
-						style={{ height: "60px", width: "100%", backgroundColor: "grey" }}
+						style={{ height: rowh * 2, width: "100%", backgroundColor: "grey" }}
 					>Close
 					</Button>
 				</SidebarFooter>
@@ -916,8 +988,36 @@ const RetroTree = (props) => {
 
 
 			<Modal id="modal" show={showConstraintInput} centered size="lg">
-				<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
-					Constraints for AI RetroSynthetic Route Planning
+				<div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+					<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
+						Constraints for AI RetroSynthetic Route Planning
+					</div>
+					<div style={{
+						height: rowh * 2, fontSize: "22px", display: "flex",
+						alignContent: "center", alignItems: "center"
+					}}>
+						<NoMaxWidthTooltip
+							title={
+								<React.Fragment>
+									<div id="criteriaTooltip" style={{
+										display: "flex", flexDirection: "column",
+										fontSize: "15px", flexWrap: "nowrap"
+									}}>
+										<div><b>Price Threshold:</b>  maximum price in USD per g/ml of commercially available <br />compounds that will be considered available precursors for the retrosynthesis. <br />Defaults to no price threshold</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Maximum Steps:</b> maximum number of retrosynthetic steps <br /> Defaults to 15 steps</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Exclude Substructure(s):</b>  SMILES of substructures to exclude from precursors <br />Defaults to None, a.k.a., no excluded substructures. </div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Exclude Molecule(s):</b>  SMILES of molecules to exclude from the set of precursors. <br />Defaults to None, a.k.a., no excluded molecules. </div>
+									</div>
+								</React.Fragment>
+							}>
+							<IconButton>
+								<InfoIcon />
+							</IconButton>
+						</NoMaxWidthTooltip>
+					</div>
 				</div>
 
 				<div style={{ margin: "40px", marginTop: "20px" }}>
@@ -942,6 +1042,9 @@ const RetroTree = (props) => {
 
 							console.log("currentConstraints", constraints);
 
+							setShowLoading(true);
+							setLoadingText("Rerun AI Route Planning")
+
 							fetch(globalContext.serverIp.concat("reconfigureConstraints"), {
 								method: "POST",
 								headers: {
@@ -955,6 +1058,7 @@ const RetroTree = (props) => {
 							}).then((response) =>
 								response.json())
 								.then((responseJson) => {
+									setShowLoading(false);
 									console.log("reconfigureConstraints_response", responseJson);
 									globalContext.updateTreeData(responseJson);
 									graph.read(responseJson);
@@ -974,9 +1078,52 @@ const RetroTree = (props) => {
 
 
 			<Modal id="modal" show={showWeightInput} centered size="lg">
-				<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
+
+				{/* <div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
 					Adjust Criteria Weighting
+				</div> */}
+
+
+				<div style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+					<div style={{ textAlign: "center", paddingTop: "10px", fontSize: "25px" }}>
+						Adjust Criteria Weighting
+					</div>
+					<div style={{
+						height: rowh * 2, fontSize: "22px", display: "flex",
+						alignContent: "center", alignItems: "center"
+					}}>
+						<NoMaxWidthTooltip
+							title={
+								<React.Fragment>
+									<div id="criteriaTooltip" style={{
+										display: "flex", flexDirection: "column",
+										fontSize: "15px", flexWrap: "nowrap"
+									}}>
+										<div style={{ height: "30px", textAlign: "center",  fontSize: "17px"}}>
+											<b>Unselect all weights to assign equal weights to each criteria</b>
+										</div>
+										<div style={{ height: "14px" }}></div>
+										<div><b>Influence:</b>  the number of molecules affected by revising the step</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Reaction confidence:</b> the confidence in the step of disconnection</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Complexity:</b>  the reduction of the complexity of the step's reactants compared to its product</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Convergence:</b> the number of reactants in the step and their relative sizes</div>
+										<div style={{ height: "7px" }}></div>
+										<div><b>Associated subtree confidence:</b> the confidence in the associated subtrees in the step <br />
+											other than the subtree containing the molecule(s) that are not able to find a retrosynthetic <br />
+											route by AI or not usable/accessible</div>
+									</div>
+								</React.Fragment>
+							}>
+							<IconButton>
+								<InfoIcon />
+							</IconButton>
+						</NoMaxWidthTooltip>
+					</div>
 				</div>
+
 
 				<div style={{ margin: "40px", marginTop: "20px" }}>
 					<WeightInputPanel updateWeightFromPanel={updateWeightFromPanel}
@@ -999,6 +1146,13 @@ const RetroTree = (props) => {
 							setShowWeightInput(false);
 
 							displayReviseMenu();
+							setReviseList([]);
+
+							setShowLoading(true);
+							setLoadingText("Analysing Revise Steps");
+
+							previousReviseSelectedNode = null;
+
 
 							console.log("currentWeight", weights);
 
@@ -1008,11 +1162,17 @@ const RetroTree = (props) => {
 									"Accept": "application/json",
 									"Content-Type": "application/json"
 								},
-								body: JSON.stringify(graph.cfg.data)
+								body: JSON.stringify({
+									graph: graph.cfg.data,
+									weights: weights
+								})
 							})
 								.then((response) =>
 									response.json())
 								.then((responseJson) => {
+
+									setShowLoading(false);
+
 									console.log("revise_response", responseJson);
 									globalContext.updateTreeData(responseJson);
 									graph.read(responseJson);
@@ -1025,6 +1185,38 @@ const RetroTree = (props) => {
 
 												const id = "selectedRoute" + node.rank;
 
+												let firstRow = [];
+												let secondRow = [];
+												let thirdRow = [];
+												if (weightRef.current.influence == null &&
+													weightRef.current.complexity == null &&
+													weightRef.current.convergence == null &&
+													weightRef.current.reactionConfidence == null &&
+													weightRef.current.associatedSubtreeConfidence == null) {
+													firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+													firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+													secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+													thirdRow.push(<span>associated subtree confidence: {
+														node.associatedSubtreeConfidence.toFixed(3)
+													}</span>);
+												}
+												else {
+													if (weightRef.current.influence != null)
+														firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+													if (weightRef.current.reactionConfidence != null)
+														firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													if (weightRef.current.complexity != null)
+														secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+													if (weightRef.current.convergence != null)
+														secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+													if (weightRef.current.associatedSubtreeConfidence != null)
+														thirdRow.push(<span>associated subtree confidence: {
+															node.associatedSubtreeConfidence.toFixed(3)
+														}</span>);
+												}
+
+
 												tempReviseList.push(
 													[parseInt(node.rank),
 													<MenuItem
@@ -1034,10 +1226,15 @@ const RetroTree = (props) => {
 														onClick={
 															(e) => {
 
-																if (previousReviseSelectedNode)
+
+																if (previousReviseSelectedNode != null) {
 																	document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
 																		.style.backgroundColor = "#f4f5f7";
+																}
 
+
+
+																// console.log("selectedRoute", document.getElementById("selectedRoute" + node.rank));
 																document.getElementById("selectedRoute" + node.rank)
 																	.style.backgroundColor = "#e9ecef";
 
@@ -1071,7 +1268,7 @@ const RetroTree = (props) => {
 																fontSize: "20px", justifyItems: "start",
 																position: "relative", top: "10px", left: "10px"
 															}}>
-																<Text>Rank {node.rank} (Score: {node.SAW})</Text>
+																<Text>Rank {node.rank} (Score: {node.SAW.toFixed(3)})</Text>
 
 															</div>
 
@@ -1082,17 +1279,13 @@ const RetroTree = (props) => {
 															}}>
 																<Text>
 																	<div>
-																		<span>influence: {node.influence} </span>
-																		<span>reaction confidence: {node.reactionConfidence} </span>
+																		{firstRow}
 																	</div>
 																	<div>
-																		<span>complexity: {node.complexity} </span>
-																		<span>convergence: {node.convergence}</span>
+																		{secondRow}
 																	</div>
 																	<div>
-																		<span>associated subtree confidence: {
-																			node.associatedSubtreeConfidence
-																		}</span>
+																		{thirdRow}
 																	</div>
 
 																</Text>
@@ -1127,6 +1320,37 @@ const RetroTree = (props) => {
 				</div>
 			</Modal>
 
+			<Modal id="modal" show={showLoading} centered size="lg">
+				<div style={{ height: "200px", textAlign: "center", padding: "0px", margin: "0px" }}>
+					<div style={{
+						height: "40%", textAlign: "center",
+						padding: "10px 20px", paddingTop: "20px", paddingBottom: "0px"
+					}}>
+						<text style={{ fontSize: "35px" }}>
+							{loadingText}
+						</text>
+					</div>
+					<div style={{
+						height: "20%", textAlign: "center",
+						margin: "0px", padding: "0px"
+					}}>
+						<text style={{ fontSize: "18px" }}>
+							This process might take up to 10 minutes
+						</text>
+					</div>
+
+					<LoadingButton loading variant="outlined" size="large"
+						style={{
+							width: "50%", height: "35%",
+							border: "none"
+						}}
+						loadingIndicator={<CircularProgress color="inherit" size={50} />}
+					>
+					</LoadingButton>
+
+				</div>
+			</Modal>
+
 		</div>
 	);
 }
@@ -1136,7 +1360,7 @@ const styles = StyleSheet.create({
 	container: {
 	},
 	scrollView: {
-		maxHeight: "635px"
+		maxHeight: rowh * 16
 	},
 });
 

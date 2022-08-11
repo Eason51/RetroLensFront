@@ -52,7 +52,7 @@ function TreeInterface(props) {
 				<div key="a">
 					<Card variant="outlined" style={{ height: rowh * 1.7, backgroundColor: "#e9ecef" }}>
 						<Row style={{ position: "relative", top: "17%" }}>
-							<div style={{
+							{/* <div style={{
 								position: "relative", left: "3%",
 								fontSize: "150%", backgroundColor: "#a7f0b9",
 								borderRadius: 20, minWidth: "175px",
@@ -68,11 +68,10 @@ function TreeInterface(props) {
 								fontSize: "20px", marginTop: "auto", marginBottom: "auto"
 							}}>
 								Confidence: {confidence}
-							</div>
+							</div> */}
 							<Button id="reviseButton"
 								variant='contained' size='large'
-								style={{ position: "absolute", left: "78%", fontSize: "1vm",
-									height: "140%" }}
+								style={{ position: "absolute", left: "78%", fontSize: "1vm"}}
 								onClick={() => {
 									// const promise = fetch(globalContext.serverIp.concat("revise"), {
 									// 	method: "POST",

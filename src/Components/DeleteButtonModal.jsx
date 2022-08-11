@@ -53,7 +53,15 @@ function DeleteButtonModal(props) {
 						graph.updateChildren([], model.id);
 						globalContext.updateTreeData(graph.cfg.data);
 						graph.render();
+
+						model.children = []
 					}
+
+					if("handledByAI" in model && model.handledByAI == true)
+						model.handledByAI = false;
+
+					if("AIFailed" in model && model.AIFailed == true)
+						model.AIFailed = false;
 
 					document.getElementById("drawBoardText").innerHTML = "Please edit the reaction."
 					document.getElementById("drawBoardButton").innerHTML = "Save changes"
