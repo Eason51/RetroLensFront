@@ -2,7 +2,9 @@ $sidebar-collapsed-width: 0px !default;
 $sidebar-bg-color: #f4f5f7 !default;
 $highlight-color: #000000 !default;
 $breakpoint-xs: 100px !default;
-$sidebar-width: 22% !default;
+$sidebar-width: 25.3% !default;
+$submenu-bg-color: #f4f5f7 !default;
+$submenu-indent: 0px !default;
 
 @import '~react-pro-sidebar/dist/scss/styles.scss';
 
@@ -12,6 +14,32 @@ $sidebar-width: 22% !default;
 	padding: 0px;
 }
 
+.pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu .pro-inner-list-item .pro-inner-item{
+	padding: 0px;
+	pointer-events: none;
+}
+
+.comboSubMenu{
+	pointer-events: none;
+}
+
+.pro-arrow{
+	pointer-events: auto;
+	// background-color: #d7d5d5;
+}
+
+
+.pro-arrow-wrapper{
+	left: 4px;
+}
+
+.combo .pro-inner-item .pro-arrow-wrapper{
+	left: 19px;
+}
+
+.failureNode .pro-inner-item .pro-arrow-wrapper{
+	left: 19x;
+}
 
 .g6-tooltip {
 	padding: 0px;

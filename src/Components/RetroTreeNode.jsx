@@ -731,6 +731,126 @@ G6.registerNode(
 			// this.drawLinkPoints(cfg, group);
 			return keyShape;
 		},
+		afterDraw(cfg, group) {
+
+			if ("failureNodeSelected" in cfg && cfg.failureNodeSelected) {
+			// if(true){
+				let width = 136;
+				let height = 117;
+
+
+				const back2 = group.addShape('rect', {
+					zIndex: -2,
+					attrs: {
+						x: 0,
+						y: 0,
+						width: width,
+						height: height,
+						fill: "#31a4cd",
+						opacity: 0.6
+					},
+					// must be assigned in G6 3.3 and later versions. it can be any value you want
+					name: 'circle-shape2'
+				});
+				// The third background circle
+				const back3 = group.addShape('rect', {
+					zIndex: -1,
+					attrs: {
+						x: 0,
+						y: 0,
+						width: width,
+						height: height,
+						fill: "#31a4cd",
+						opacity: 0.6
+					},
+					// must be assigned in G6 3.3 and later versions. it can be any value you want
+					name: 'circle-shape3'
+				});
+				const back4 = group.addShape('rect', {
+					zIndex: -3,
+					attrs: {
+						x: 0,
+						y: 0,
+						width: width,
+						height: height,
+						fill: "#31a4cd",
+						opacity: 0.6
+					},
+					// must be assigned in G6 3.3 and later versions. it can be any value you want
+					name: 'circle-shape4'
+				});
+				const back5 = group.addShape('rect', {
+					zIndex: -4,
+					attrs: {
+						x: 0,
+						y: 0,
+						width: width,
+						height: height,
+						fill: "#31a4cd",
+						opacity: 0.6
+					},
+					// must be assigned in G6 3.3 and later versions. it can be any value you want
+					name: 'circle-shape5'
+				});
+
+				group.sort(); // Sort the graphic shapes of the nodes by zIndex
+
+				// Magnify the second circle and fade it out
+				back2.animate({
+					width: width + 40,
+					height: height + 40,
+					x: -20,
+					y: -20,
+					opacity: 0.2
+				}, {
+					repeat: true, // Play the animation repeatly
+					duration: 1000,
+					easing: 'easeCubic',
+					delay: 0 // Delay 1s
+				})
+
+				// Magnify the third circle and fade it out
+				back3.animate({
+					width: width + 40,
+					height: height + 40,
+					x: -20,
+					y: -20,
+					opacity: 0.2
+				}, {
+					repeat: true, // Play the animation repeatly
+					duration: 1000,
+					easing: 'easeCubic',
+					delay: 250 // Delay 2s
+				})
+
+				back4.animate({
+					width: width + 40,
+					height: height + 40,
+					x: -20,
+					y: -20,
+					opacity: 0.2
+				}, {
+					repeat: true, // Play the animation repeatly
+					duration: 1000,
+					easing: 'easeCubic',
+					delay: 500 // Delay 2s
+				})
+
+				back5.animate({
+					width: width + 40,
+					height: height + 40,
+					x: -20,
+					y: -20,
+					opacity: 0.2
+				}, {
+					repeat: true, // Play the animation repeatly
+					duration: 1000,
+					easing: 'easeCubic',
+					delay: 750// Delay 2s
+				})
+			}
+
+		},
 		getAnchorPoints() {
 			return [
 				[0.5, 0], // 左侧中间

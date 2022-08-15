@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Modal } from "react-bootstrap"
-import { Button, CircularProgress} from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import MainBlock from "../RetroLens_Components/MainBlock";
 import { ConstraintInputPanel } from "../RetroLens_Components/ConstraintInputPanel";
 import { TreeInterface } from "./TreeInterface";
@@ -165,6 +165,9 @@ function MainInterface() {
 								</IconButton>
 							</NoMaxWidthTooltip>
 						</div>
+					</div>
+					<div style={{ textAlign: "center", paddingTop: "0px", fontSize: "15px" }}>
+						Unselect constraints to apply NO constraints
 					</div>
 
 					<div style={{ margin: "40px", marginTop: "20px" }}>

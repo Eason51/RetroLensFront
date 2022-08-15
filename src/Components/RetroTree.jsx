@@ -50,8 +50,11 @@ let selectedModel = null;
 let selectedModelParent = null;
 let selectedRoute = null;
 let previousGraph = null;
+let previousClick = "";
+let moleculePreviousClick = "";
 
 let previousReviseSelectedNode = null;
+let comboCount = -1;
 
 // const [alternativeHighlightArr, setAlternativeHighlightArr] = useState([]);
 
@@ -81,6 +84,7 @@ const RetroTree = (props) => {
 	const [reviseMenuCollapsed, setReviseMenuCollapsed] = useState(true);
 	const [routeList, setRouteList] = useState([]);
 	const [reviseList, setReviseList] = useState([]);
+	const [moleculeList, setMoleculeList] = useState([]);
 	const [sideButtonVisibility, setSideButtonVisibility] = useState("hidden");
 	const [modalArr, setModelArr] = useState([]);
 	const [constraints, updateConstraints] = useState(props.constraints);
@@ -105,6 +109,9 @@ const RetroTree = (props) => {
 	const [showWeightInput, setShowWeightInput] = useState(false);
 	const [showLoading, setShowLoading] = useState(false);
 	const [loadingText, setLoadingText] = useState("");
+
+	const [openCandidateMenu, setOpenCandidateMenu] = useState(false);
+	const [openMoleculeMenu, setOpenMoleculeMenu] = useState(false);
 
 
 	// const stateRef = useRef();
@@ -256,7 +263,7 @@ const RetroTree = (props) => {
 	const reopenReviseMenu = () => {
 		setReviseMenuCollapsed(false);
 		setSideButtonVisibility("hidden");
-		graph.changeSize(width * 0.7315, rowh * 18.9);
+		graph.changeSize(width * 0.705, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 	}
@@ -274,7 +281,7 @@ const RetroTree = (props) => {
 		);
 		setReviseMenuCollapsed(false);
 		setSideButtonVisibility("hidden");
-		graph.changeSize(width * 0.7315, rowh * 18.9);
+		graph.changeSize(width * 0.705, rowh * 18.9);
 		graph.fitView();
 		graph.render();
 	}
@@ -340,10 +347,36 @@ const RetroTree = (props) => {
 
 			if (name === "deleteButton") {
 
-				setModelArr([<DeleteButtonModal model={model}
-					graph={graph} setSideButtonVisibility={setSideButtonVisibility}
-					setModelArr={setModelArr}
-				/>]);
+				if ("children" in model && model.children != null && model.children.length != 0)
+					setModelArr([<DeleteButtonModal model={model}
+						graph={graph} setSideButtonVisibility={setSideButtonVisibility}
+						setModelArr={setModelArr}
+					/>]);
+				else {
+					if (model.children) {
+						graph.updateChildren([], model.id);
+						globalContext.updateTreeData(graph.cfg.data);
+						graph.render();
+
+						model.children = []
+					}
+
+					if ("handledByAI" in model && model.handledByAI == true)
+						model.handledByAI = false;
+
+					if ("AIFailed" in model && model.AIFailed == true)
+						model.AIFailed = false;
+
+					document.getElementById("drawBoardText").innerHTML = "Please edit the reaction."
+					document.getElementById("drawBoardButton").innerHTML = "Save changes"
+					document.getElementById("drawBoardButton").style.width = "200px";
+					document.getElementById("drawBoardButton").style.left = "80%";
+					// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule(model.smiles);
+					window.ketcher.setMolecule(model.smiles);
+					document.getElementById("drawBoard").style.visibility = "visible";
+					document.getElementById("drawBoard").style.zIndex = 2;
+					document.getElementById("main").style.zIndex = -1;
+				}
 
 			}
 			else if (name === "expandButton") {
@@ -358,7 +391,7 @@ const RetroTree = (props) => {
 					setSideButtonVisibility("hidden")
 					previousGraph = JSON.parse(JSON.stringify(graph.cfg.data));
 					console.log("previousGraph", previousGraph);
-					graph.changeSize(width * 0.7315, rowh * 18.9);
+					graph.changeSize(width * 0.705, rowh * 18.9);
 					graph.fitView();
 					graph.render();
 
@@ -387,7 +420,7 @@ const RetroTree = (props) => {
 									id={id}
 									style={{ height: "80px", color: "black" }} size="lg">
 									<div style={{
-										fontFamily: "consolas",
+										fontFamily: "Roboto",
 										fontSize: "20px", justifyItems: "start",
 										position: "relative", top: "10px",
 									}}>
@@ -396,7 +429,7 @@ const RetroTree = (props) => {
 									</div>
 
 									<div style={{
-										fontFamily: "consolas",
+										fontFamily: "Roboto",
 										fontSize: "12px", justifyItems: "start",
 										position: "relative", top: "10px"
 									}}>
@@ -487,127 +520,6 @@ const RetroTree = (props) => {
 
 
 	const [oldGlobalContext, setOldGlobalContext] = useState({});
-
-
-	// useEffect(() => {
-
-	// 	if (oldGlobalContext.revisePromise != globalContext.revisePromise
-	// 		&& globalContext.revisePromise.then) {
-	// 		// console.log("reviseContext", globalContext.revisePromise);
-	// 		globalContext.revisePromise
-	// 			.then((response) =>
-	// 				response.json())
-	// 			.then((responseJson) => {
-	// 				console.log("revise_response", responseJson);
-	// 				globalContext.updateTreeData(responseJson);
-	// 				graph.read(responseJson);
-
-	// 				setReviseList([]);
-	// 				let tempReviseList = [];
-	// 				G6.Util.traverseTree(graph.cfg.data,
-	// 					(node) => {
-	// 						if ("rank" in node && node.rank > 0) {
-
-	// 							const id = "selectedRoute" + node.rank;
-
-	// 							tempReviseList.push(
-	// 								[parseInt(node.rank),
-	// 								<MenuItem
-	// 									// style={{
-	// 									// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
-	// 									// }}	
-	// 									onClick={
-	// 										(e) => {
-
-	// 											if (previousReviseSelectedNode)
-	// 												document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
-	// 													.style.backgroundColor = "#f4f5f7";
-
-	// 											document.getElementById("selectedRoute" + node.rank)
-	// 												.style.backgroundColor = "#e9ecef";
-
-	// 											previousReviseSelectedNode = node;
-
-	// 											G6.Util.traverseTree(graph.cfg.data,
-	// 												(innerNode) => {
-	// 													if ("reviseSelected" in innerNode
-	// 														&& innerNode.reviseSelected == true) {
-	// 														innerNode.reviseSelected = false
-	// 													}
-	// 												}
-	// 											);
-
-	// 											node.reviseSelected = true;
-	// 											globalContext.updateTreeData(graph.cfg.data);
-	// 											graph.read(graph.cfg.data);
-	// 										}
-	// 									}
-	// 								>
-
-	// 									<DropdownItem
-	// 										id={id}
-	// 										style={{
-	// 											height: "100px", color: "black",
-	// 											padding: "0px"
-	// 										}} size="lg">
-
-	// 										<div style={{
-	// 											fontFamily: "consolas",
-	// 											fontSize: "20px", justifyItems: "start",
-	// 											position: "relative", top: "10px", left: "10px"
-	// 										}}>
-	// 											<Text>Rank {node.rank} (Score: {node.SAW})</Text>
-
-	// 										</div>
-
-	// 										<div style={{
-	// 											fontFamily: "consolas",
-	// 											fontSize: "12px", justifyItems: "start",
-	// 											position: "relative", top: "10px", left: "10px"
-	// 										}}>
-	// 											<Text>
-	// 												<div>
-	// 													<span>influence: {node.influence} </span>
-	// 													<span>reaction confidence: {node.reactionConfidence} </span>
-	// 												</div>
-	// 												<div>
-	// 													<span>complexity: {node.complexity} </span>
-	// 													<span>convergence: {node.convergence}</span>
-	// 												</div>
-	// 												<div>
-	// 													<span>associated subtree confidence: {
-	// 														node.associatedSubtreeConfidence
-	// 													}</span>
-	// 												</div>
-
-	// 											</Text>
-
-	// 										</div>
-
-
-	// 									</DropdownItem>
-
-	// 								</MenuItem>
-	// 								]
-	// 							);
-	// 						}
-	// 					});
-	// 				tempReviseList.sort();
-	// 				let tempReviseList2 = [];
-	// 				tempReviseList.forEach(([rank, component]) => {
-	// 					tempReviseList2.push(component);
-	// 				})
-	// 				setReviseList(tempReviseList2);
-	// 			})
-	// 			.catch(err => {
-	// 				console.log("fetching error")
-	// 				console.log(err);
-	// 			});
-	// 	}
-
-	// 	setOldGlobalContext(globalContext);
-	// }, [globalContext])
-
 
 
 	useEffect(() => {
@@ -853,7 +765,7 @@ const RetroTree = (props) => {
 			{/* <button onClick={updateData}>update data</button> */}
 
 			<ProSidebar style={{
-				position: "absolute", left: "80%", top: "0%",
+				position: "absolute", left: "77%", top: "0%",
 				height: rowh * 21,
 				// transform: "translate(0, -10%)"
 			}}
@@ -874,7 +786,7 @@ const RetroTree = (props) => {
 				</SidebarHeader>
 				<SidebarContent>
 					<Menu>
-						<ScrollView style={styles.scrollView}>
+						<ScrollView style={styles.routeView}>
 							{routeList}
 						</ScrollView>
 
@@ -897,7 +809,7 @@ const RetroTree = (props) => {
 			</ProSidebar>
 
 			<ProSidebar id="reviseSideBar" style={{
-				position: "absolute", left: "80%", top: "0%",
+				position: "absolute", left: "77%", top: "0%",
 				height: rowh * 21,
 				// transform: "translate(0, -10%)"
 				margin: "0",
@@ -910,9 +822,9 @@ const RetroTree = (props) => {
 						<div style={{
 							height: rowh * 2, fontSize: "22px", display: "flex",
 							alignContent: "center", alignItems: "center", marginLeft: "20px",
-							color: "black"
+							color: "black", fontFamily: "Roboto"
 						}}>
-							Recommended Revise Step
+							Recommended Revision
 						</div>
 						<div style={{
 							height: rowh * 2, fontSize: "22px", display: "flex",
@@ -952,10 +864,68 @@ const RetroTree = (props) => {
 					<Menu style={{
 						margin: "0",
 						padding: "0",
-					}}>
-						<ScrollView style={styles.scrollView}>
-							{reviseList}
-						</ScrollView>
+					}}
+						iconShape="square">
+						<SubMenu title={
+							<div style={{
+								height: rowh * 1.3, color: "black",
+								padding: "0px"
+							}}>
+								<div style={{
+									fontFamily: "Roboto",
+									fontSize: "20px", justifyItems: "start",
+									position: "relative", top: "10px", left: "15px"
+								}}>
+									Revision for All Failed Moelcule
+								</div>
+							</div>
+						}
+							open={openCandidateMenu}
+							onOpenChange={
+								(e) => {
+									if (openCandidateMenu)
+										setOpenCandidateMenu(false);
+									else {
+										setOpenMoleculeMenu(false);
+										setOpenCandidateMenu(true);
+									}
+								}
+							}
+						>
+							<ScrollView style={styles.scrollView}>
+								{reviseList}
+							</ScrollView>
+						</SubMenu>
+						<SubMenu title={
+							<div style={{
+								height: rowh * 1.3, color: "black",
+								padding: "0px"
+							}}>
+								<div style={{
+									fontFamily: "Roboto",
+									fontSize: "20px", justifyItems: "start",
+									position: "relative", top: "10px", left: "15px"
+								}}>
+									Revision for Each Failed Molecule
+								</div>
+							</div>
+						}
+							open={openMoleculeMenu}
+							onOpenChange={
+								(e) => {
+									if (openMoleculeMenu)
+										setOpenMoleculeMenu(false);
+									else {
+										setOpenCandidateMenu(false);
+										setOpenMoleculeMenu(true);
+									}
+								}
+							}
+						>
+							<ScrollView style={styles.scrollView}>
+								{moleculeList}
+							</ScrollView>
+						</SubMenu>
 
 					</Menu>
 				</SidebarContent>
@@ -1018,6 +988,9 @@ const RetroTree = (props) => {
 							</IconButton>
 						</NoMaxWidthTooltip>
 					</div>
+				</div>
+				<div style={{ textAlign: "center", paddingTop: "0px", fontSize: "15px" }}>
+					Unselect constraints to apply NO constraints
 				</div>
 
 				<div style={{ margin: "40px", marginTop: "20px" }}>
@@ -1099,7 +1072,7 @@ const RetroTree = (props) => {
 										display: "flex", flexDirection: "column",
 										fontSize: "15px", flexWrap: "nowrap"
 									}}>
-										<div style={{ height: "30px", textAlign: "center",  fontSize: "17px"}}>
+										<div style={{ height: "30px", textAlign: "center", fontSize: "17px" }}>
 											<b>Unselect all weights to assign equal weights to each criteria</b>
 										</div>
 										<div style={{ height: "14px" }}></div>
@@ -1122,6 +1095,9 @@ const RetroTree = (props) => {
 							</IconButton>
 						</NoMaxWidthTooltip>
 					</div>
+				</div>
+				<div style={{ textAlign: "center", padding: "0px", fontSize: "15px" }}>
+					Unselect all criteria to apply equal weighting
 				</div>
 
 
@@ -1154,6 +1130,19 @@ const RetroTree = (props) => {
 							previousReviseSelectedNode = null;
 
 
+							G6.Util.traverseTree(graph.cfg.data,
+								(innerNode) => {
+									if ("failureNodeSelected" in innerNode
+										&& innerNode.failureNodeSelected == true) {
+										innerNode.failureNodeSelected = false;
+									}
+								}
+							);
+
+							setOpenCandidateMenu(false);
+							setOpenMoleculeMenu(false);
+
+
 							console.log("currentWeight", weights);
 
 							fetch(globalContext.serverIp.concat("revise"), {
@@ -1174,11 +1163,620 @@ const RetroTree = (props) => {
 									setShowLoading(false);
 
 									console.log("revise_response", responseJson);
-									globalContext.updateTreeData(responseJson);
-									graph.read(responseJson);
+									let responseGraph = responseJson.graph;
+									let comboSawArr = responseJson.comboSawArr;
+									comboCount = comboSawArr.length;
+									globalContext.updateTreeData(responseGraph);
+									graph.read(responseGraph);
 
 									setReviseList([]);
 									let tempReviseList = [];
+									let comboRank = 1;
+									comboSawArr.forEach(comboSaw => {
+										let comboArr = comboSaw.combo;
+										let comboSawScore = comboSaw.SAW;
+
+										const comboId = "selectedCombo" + comboRank;
+
+										let submenuTitle =
+											<div style={{
+												height: "50px", color: "black",
+												padding: "0px"
+											}}>
+												<div className="comboSubMenu" style={{
+													fontFamily: "Roboto",
+													fontSize: "20px", justifyItems: "start",
+													position: "relative", top: "10px", left: "30px"
+												}}
+												>
+													Option {comboRank} (Score: {comboSawScore.toFixed(3)})
+												</div>
+											</div>
+
+
+										let reviseStepList = []
+										let nodeCount = 1;
+										comboArr.forEach(
+											nodeId => {
+												let node = graph.findById(nodeId).get("model");
+
+												const id = comboId + "selectedRoute" + nodeCount;
+
+												let firstRow = [];
+												let secondRow = [];
+												let thirdRow = [];
+												if (weightRef.current.influence == null &&
+													weightRef.current.complexity == null &&
+													weightRef.current.convergence == null &&
+													weightRef.current.reactionConfidence == null &&
+													weightRef.current.associatedSubtreeConfidence == null) {
+													firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+													firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+													secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
+													thirdRow.push(<span>associated subtree confidence: {
+														node.associatedSubtreeConfidence.toFixed(3)
+													}</span>);
+												}
+												else {
+													if (weightRef.current.influence != null)
+														firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+													if (weightRef.current.reactionConfidence != null)
+														firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													if (weightRef.current.complexity != null)
+														secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+													if (weightRef.current.convergence != null)
+														secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+													if (weightRef.current.associatedSubtreeConfidence != null)
+														thirdRow.push(<span>associated subtree confidence: {
+															node.associatedSubtreeConfidence.toFixed(3)
+														}</span>);
+												}
+
+
+												reviseStepList.push(
+													<MenuItem
+														onClick={
+															(e) => {
+
+																let failureNodeIndex = 1;
+																let nodeIndex = 1;
+																while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+
+																	document.getElementById("failureNode" + failureNodeIndex)
+																		.style.backgroundColor = "inherit";
+
+																	while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+																		document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex)
+																			.style.backgroundColor = "inherit";
+
+																		nodeIndex += 1;
+																	}
+																	failureNodeIndex += 1;
+																	nodeIndex = 1;
+																}
+
+
+																G6.Util.traverseTree(graph.cfg.data,
+																	(innerNode) => {
+																		if ("failureNodeSelected" in innerNode
+																			&& innerNode.failureNodeSelected == true) {
+																			innerNode.failureNodeSelected = false;
+																		}
+																	}
+																);
+
+																for (let i = 0; i != comboCount; ++i) {
+																	let count = 1;
+																	while (document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count) != null) {
+																		document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count)
+																			.style.backgroundColor = "inherit";
+
+																		count += 1;
+																	}
+																}
+
+																// console.log("selectedRoute", document.getElementById("selectedRoute" + node.rank));
+																// console.log("id", comboId + "selectedRoute" + nodeCount);
+																// if(document.getElementById(comboId + "selectedRoute" + nodeCount) != null)
+																// 	document.getElementById(comboId + "selectedRoute" + nodeCount)
+																// 		.style.backgroundColor = "#e9ecef";
+
+																document.getElementById(id).style.backgroundColor = "#d7d5d5";
+
+
+																G6.Util.traverseTree(graph.cfg.data,
+																	(innerNode) => {
+																		if ("reviseSelected" in innerNode
+																			&& innerNode.reviseSelected == true) {
+																			innerNode.reviseSelected = false;
+																		}
+																	}
+																);
+
+																node.reviseSelected = true;
+																globalContext.updateTreeData(graph.cfg.data);
+																graph.read(graph.cfg.data);
+
+																previousClick = "node";
+															}
+														}
+													>
+
+														<DropdownItem
+															id={id}
+															style={{
+																height: "100px", color: "black",
+																padding: "0px", backgroundColor: "inherit",
+															}} size="lg">
+															<div style={{ position: "relative", left: "30px" }}>
+
+																<div style={{
+																	fontFamily: "Roboto",
+																	fontSize: "20px", justifyItems: "start",
+																	position: "relative", top: "10px", left: "10px"
+																}}>
+																	<Text>Reaction {nodeCount} (Score: {node.SAW.toFixed(3)})</Text>
+
+																</div>
+
+																<div style={{
+																	fontFamily: "Roboto",
+																	fontSize: "12px", justifyItems: "start",
+																	position: "relative", top: "10px", left: "10px"
+																}}>
+																	<Text>
+																		<div>
+																			{firstRow}
+																		</div>
+																		<div>
+																			{secondRow}
+																		</div>
+																		<div>
+																			{thirdRow}
+																		</div>
+
+																	</Text>
+
+																</div>
+
+															</div>
+														</DropdownItem>
+
+													</MenuItem>
+												);
+
+												nodeCount += 1;
+											}
+										);
+
+										tempReviseList.push(
+											[parseFloat(comboSawScore),
+											<SubMenu
+												id={comboId}
+												className={"combo"}
+												title={submenuTitle}
+												onClick={(e) => {
+
+													let failureNodeIndex = 1;
+													let nodeIndex = 1;
+													while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+
+														document.getElementById("failureNode" + failureNodeIndex)
+															.style.backgroundColor = "inherit";
+
+														while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+															document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex)
+																.style.backgroundColor = "inherit";
+
+															nodeIndex += 1;
+														}
+														failureNodeIndex += 1;
+														nodeIndex = 1;
+													}
+
+													G6.Util.traverseTree(graph.cfg.data,
+														(innerNode) => {
+															if ("failureNodeSelected" in innerNode
+																&& innerNode.failureNodeSelected == true) {
+																innerNode.failureNodeSelected = false;
+															}
+														}
+													);
+
+													for (let i = 0; i != comboCount; ++i) {
+														document.getElementById("selectedCombo" + (i + 1))
+															.style.backgroundColor = "#f4f5f7";
+													}
+
+
+													document.getElementById(comboId)
+														.style.backgroundColor = "#e9ecef";
+
+
+													if (previousClick !== "node") {
+
+														for (let i = 0; i != comboCount; ++i) {
+															let count = 1;
+															while (document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count) != null) {
+																document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count)
+																	.style.backgroundColor = "inherit";
+
+																count += 1;
+															}
+														}
+
+														G6.Util.traverseTree(graph.cfg.data,
+															(innerNode) => {
+																if ("reviseSelected" in innerNode
+																	&& innerNode.reviseSelected == true) {
+																	innerNode.reviseSelected = false
+																}
+															}
+														);
+
+														comboArr.forEach(
+															nodeId => {
+																let node = graph.findById(nodeId).get("model");
+																node.reviseSelected = true;
+															}
+														);
+
+														// node.reviseSelected = true;
+														globalContext.updateTreeData(graph.cfg.data);
+														graph.read(graph.cfg.data);
+													}
+
+													previousClick = "combo";
+												}}
+											>
+												{reviseStepList}
+											</SubMenu>
+											]
+										);
+
+										comboRank += 1;
+									});
+
+									// tempReviseList.sort();
+									let tempReviseList2 = [];
+									tempReviseList.forEach(([rank, component]) => {
+										tempReviseList2.push(component);
+									});
+									setReviseList(tempReviseList2);
+
+
+
+
+									// console.log("graph", graph);
+									setMoleculeList([]);
+									let tempMoleculeList = [];
+									let failureNodeCount = 1;
+									G6.Util.traverseTree(graph.cfg.data,
+										(failureNode) => {
+											if (("isAvailable" in failureNode && !failureNode.isAvailable)
+												|| ("notAvailable" in failureNode && failureNode.notAvailable)) {
+
+												const failureNodeId = "failureNode" + failureNodeCount
+
+
+												let sawStatusArr = [];
+												let sawNode = graph.findById(failureNode.id).get("parent");
+												while (sawNode != null) {
+
+													let node = sawNode.get("model");
+													if ("candidate" in node && node.candidate) {
+														sawStatusArr.push([node.SAW.toFixed(3), {
+															saw: node.SAW.toFixed(3),
+															visited: false
+														}]);
+													}
+													sawNode = sawNode.get("parent");
+												}
+												sawStatusArr.sort();
+												let sawStatusArr2 = []
+												sawStatusArr.forEach(([index, saw]) => {
+													sawStatusArr2.push(saw);
+												});
+												sawStatusArr = sawStatusArr2;
+
+												console.log("sawStatusArr", sawStatusArr);
+
+
+												let moleculeCandidateList = [];
+												let candidateNode = graph.findById(failureNode.id).get("parent");
+												let nodeCount = 1;
+												while (candidateNode != null) {
+
+													let node = candidateNode.get("model");
+													if ("candidate" in node && node.candidate) {
+
+														console.log("nodeCount", nodeCount);
+														const id = failureNodeId + "selectedRoute" + nodeCount;
+
+														let reactionIndex = 0;
+														for (; reactionIndex != sawStatusArr.length; ++reactionIndex) {
+															if (node.SAW.toFixed(3) == sawStatusArr[reactionIndex].saw
+																&& sawStatusArr[reactionIndex].visited == false) {
+
+																sawStatusArr[reactionIndex].visited = true;
+																break;
+															}
+														}
+														console.log("saw", node.SAW.toFixed(3));
+														console.log("reactionIndex", reactionIndex);
+
+														let firstRow = [];
+														let secondRow = [];
+														let thirdRow = [];
+														if (weightRef.current.influence == null &&
+															weightRef.current.complexity == null &&
+															weightRef.current.convergence == null &&
+															weightRef.current.reactionConfidence == null &&
+															weightRef.current.associatedSubtreeConfidence == null) {
+															firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+															firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+															secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+															secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
+															thirdRow.push(<span>associated subtree confidence: {
+																node.associatedSubtreeConfidence.toFixed(3)
+															}</span>);
+														}
+														else {
+															if (weightRef.current.influence != null)
+																firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+															if (weightRef.current.reactionConfidence != null)
+																firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+															if (weightRef.current.complexity != null)
+																secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+															if (weightRef.current.convergence != null)
+																secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+															if (weightRef.current.associatedSubtreeConfidence != null)
+																thirdRow.push(<span>associated subtree confidence: {
+																	node.associatedSubtreeConfidence.toFixed(3)
+																}</span>);
+														}
+
+
+														moleculeCandidateList.push([
+															node.SAW.toFixed(3),
+															<MenuItem
+																onClick={
+																	(e) => {
+
+																		for (let i = 0; i != comboCount; ++i) {
+
+																			document.getElementById("selectedCombo" + (i + 1))
+																				.style.backgroundColor = "inherit";
+
+																			let count = 1;
+																			while (document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count) != null) {
+																				document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count)
+																					.style.backgroundColor = "inherit";
+
+																				count += 1;
+																			}
+																		}
+																		<div style={{ textAlign: "center", paddingTop: "0px", fontSize: "15px" }}>
+																			Unselect constraints to apply NO constraint
+																		</div>
+
+																		let failureNodeIndex = 1;
+																		let nodeIndex = 1;
+																		while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+
+																			document.getElementById("failureNode" + failureNodeIndex)
+																				.style.backgroundColor = "inherit";
+
+																			while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+																				document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex)
+																					.style.backgroundColor = "inherit";
+
+																				nodeIndex += 1;
+																			}
+																			failureNodeIndex += 1;
+																			nodeIndex = 1;
+																		}
+
+																		document.getElementById(id).style.backgroundColor = "#d7d5d5";
+
+
+																		G6.Util.traverseTree(graph.cfg.data,
+																			(innerNode) => {
+																				if ("reviseSelected" in innerNode
+																					&& innerNode.reviseSelected == true) {
+																					innerNode.reviseSelected = false;
+																				}
+																			}
+																		);
+
+																		node.reviseSelected = true;
+																		globalContext.updateTreeData(graph.cfg.data);
+																		graph.read(graph.cfg.data);
+
+																		moleculePreviousClick = "node";
+																	}
+																}
+															>
+
+																<DropdownItem
+																	id={id}
+																	style={{
+																		height: "100px", color: "black",
+																		padding: "0px", backgroundColor: "inherit"
+																	}} size="lg">
+																	<div style={{position: "relative", left: "30px"}}>
+
+																		<div style={{
+																			fontFamily: "Roboto",
+																			fontSize: "20px", justifyItems: "start",
+																			position: "relative", top: "10px", left: "10px"
+																		}}>
+																			<Text>Reaction {reactionIndex + 1} (Score: {node.SAW.toFixed(3)})</Text>
+
+																		</div>
+
+																		<div style={{
+																			fontFamily: "Roboto",
+																			fontSize: "12px", justifyItems: "start",
+																			position: "relative", top: "10px", left: "10px"
+																		}}>
+																			<Text>
+																				<div>
+																					{firstRow}
+																				</div>
+																				<div>
+																					{secondRow}
+																				</div>
+																				<div>
+																					{thirdRow}
+																				</div>
+
+																			</Text>
+
+																		</div>
+
+																	</div>
+																</DropdownItem>
+
+															</MenuItem>
+														]);
+
+														nodeCount += 1;
+
+													}
+
+													candidateNode = candidateNode.get("parent");
+												}
+
+
+												let moleculeCandidateList2 = [];
+												moleculeCandidateList.sort();
+												moleculeCandidateList.forEach(([saw, component]) => {
+													moleculeCandidateList2.push(component)
+												});
+
+
+
+												let submenuTitle =
+													<div style={{
+														height: "50px", color: "black",
+														padding: "0px"
+													}}>
+														<div className="comboSubMenu" style={{
+															fontFamily: "Roboto",
+															fontSize: "20px", justifyItems: "start",
+															position: "relative", top: "10px", left: "30px"
+														}}
+														>
+															Failed Molecule {failureNodeCount}
+														</div>
+													</div>
+
+
+												tempMoleculeList.push(
+													[failureNode.id,
+													<SubMenu
+														className={"failureNode"}
+														id={failureNodeId}
+														title={submenuTitle}
+														onClick={(e) => {
+															// for (let i = 0; i != comboCount; ++i) {
+															// 	document.getElementById("failureNode" + (i + 1))
+															// 		.style.backgroundColor = "#f4f5f7";
+															// }
+															for (let i = 0; i != comboCount; ++i) {
+
+																document.getElementById("selectedCombo" + (i + 1))
+																	.style.backgroundColor = "inherit";
+
+																let count = 1;
+																while (document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count) != null) {
+																	document.getElementById("selectedCombo" + (i + 1) + "selectedRoute" + count)
+																		.style.backgroundColor = "inherit";
+
+																	count += 1;
+																}
+															}
+
+
+
+															if (moleculePreviousClick !== "node") {
+																let failureNodeIndex = 1;
+																let nodeIndex = 1;
+																while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+
+																	document.getElementById("failureNode" + failureNodeIndex)
+																		.style.backgroundColor = "inherit";
+
+																	while (document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex) != null) {
+																		document.getElementById("failureNode" + failureNodeIndex + "selectedRoute" + nodeIndex)
+																			.style.backgroundColor = "inherit";
+
+																		nodeIndex += 1;
+																	}
+																	failureNodeIndex += 1;
+																	nodeIndex = 1;
+																}
+
+																G6.Util.traverseTree(graph.cfg.data,
+																	(innerNode) => {
+																		if ("reviseSelected" in innerNode
+																			&& innerNode.reviseSelected == true) {
+																			innerNode.reviseSelected = false
+																		}
+																	}
+																);
+															}
+
+															document.getElementById(failureNodeId)
+																.style.backgroundColor = "#e9ecef";
+
+															G6.Util.traverseTree(graph.cfg.data,
+																(innerNode) => {
+																	if ("failureNodeSelected" in innerNode
+																		&& innerNode.failureNodeSelected == true) {
+																		innerNode.failureNodeSelected = false
+																	}
+																}
+															);
+
+															failureNode.failureNodeSelected = true;
+															// node.reviseSelected = true;
+															globalContext.updateTreeData(graph.cfg.data);
+															graph.read(graph.cfg.data);
+
+															moleculePreviousClick = "molecule";
+														}}
+													>
+														{moleculeCandidateList2}
+													</SubMenu>
+													]
+												);
+
+												failureNodeCount += 1;
+											}
+										}
+									);
+
+									let tempMoleculeList2 = [];
+									tempMoleculeList.forEach(([rank, component]) => {
+										tempMoleculeList2.push(component);
+									});
+									setMoleculeList(tempMoleculeList2);
+
+
+
+
+
+
+
+
+
+
+
+									// setReviseList([]);
+									// tempReviseList = [];
 									G6.Util.traverseTree(graph.cfg.data,
 										(node) => {
 											if ("rank" in node && node.rank > 0) {
@@ -1194,9 +1792,9 @@ const RetroTree = (props) => {
 													weightRef.current.reactionConfidence == null &&
 													weightRef.current.associatedSubtreeConfidence == null) {
 													firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
-													firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
 													secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
-													secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+													secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
 													thirdRow.push(<span>associated subtree confidence: {
 														node.associatedSubtreeConfidence.toFixed(3)
 													}</span>);
@@ -1205,11 +1803,11 @@ const RetroTree = (props) => {
 													if (weightRef.current.influence != null)
 														firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
 													if (weightRef.current.reactionConfidence != null)
-														firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+														firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
 													if (weightRef.current.complexity != null)
 														secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
 													if (weightRef.current.convergence != null)
-														secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+														secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
 													if (weightRef.current.associatedSubtreeConfidence != null)
 														thirdRow.push(<span>associated subtree confidence: {
 															node.associatedSubtreeConfidence.toFixed(3)
@@ -1264,16 +1862,16 @@ const RetroTree = (props) => {
 															}} size="lg">
 
 															<div style={{
-																fontFamily: "consolas",
+																fontFamily: "Roboto",
 																fontSize: "20px", justifyItems: "start",
 																position: "relative", top: "10px", left: "10px"
 															}}>
-																<Text>Rank {node.rank} (Score: {node.SAW.toFixed(3)})</Text>
+																<Text>Option {node.rank} (Score: {node.SAW.toFixed(3)})</Text>
 
 															</div>
 
 															<div style={{
-																fontFamily: "consolas",
+																fontFamily: "Roboto",
 																fontSize: "12px", justifyItems: "start",
 																position: "relative", top: "10px", left: "10px"
 															}}>
@@ -1300,12 +1898,12 @@ const RetroTree = (props) => {
 												);
 											}
 										});
-									tempReviseList.sort();
-									let tempReviseList2 = [];
-									tempReviseList.forEach(([rank, component]) => {
-										tempReviseList2.push(component);
-									})
-									setReviseList(tempReviseList2);
+									// tempReviseList.sort();
+									// let tempReviseList2 = [];
+									// tempReviseList.forEach(([rank, component]) => {
+									// 	tempReviseList2.push(component);
+									// })
+									// setReviseList(tempReviseList2);
 								})
 								.catch(err => {
 									console.log("fetching error")
@@ -1360,8 +1958,11 @@ const styles = StyleSheet.create({
 	container: {
 	},
 	scrollView: {
-		maxHeight: rowh * 16
+		maxHeight: rowh * 13.4
 	},
+	routeView: {
+		maxHeight: rowh * 16.3
+	}
 });
 
 
