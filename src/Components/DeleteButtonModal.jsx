@@ -73,6 +73,7 @@ function DeleteButtonModal(props) {
 					document.getElementById("drawBoard").style.zIndex = 2;
 					document.getElementById("main").style.zIndex = -1;
 					setSideButtonVisibility("hidden");
+					document.getElementById("cancelButton").style.visibility = "visible";
 					setModelArr([]);
 
 				}}>

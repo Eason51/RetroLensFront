@@ -18,8 +18,6 @@ const Checkbox = ({ children, ...props }) => (
 );
 
 
-let isMounted = false;
-
 
 class WeightInputPanel extends React.Component {
 	constructor(props) {
@@ -64,7 +62,7 @@ class WeightInputPanel extends React.Component {
 		console.log("state", this.state);
 		this.setState((state) => ({
 			isInfluence: !state.isInfluence,
-			influence: (state.isInfluence == false && state.influence == null) ? 0 : state.influence
+			influence: 0
 		}));
 	}
 	toggleComplexity = () => {
@@ -72,7 +70,7 @@ class WeightInputPanel extends React.Component {
 		// 	this.setState((state) => ({ complexity: 0 }));
 		this.setState((state) => ({
 			isComplexity: !state.isComplexity,
-			complexity: (state.isComplexity == false && state.complexity == null) ? 0 : state.complexity
+			complexity: 0
 		}));
 	}
 	toggleConvergence = () => {
@@ -80,7 +78,7 @@ class WeightInputPanel extends React.Component {
 		// 	this.setState((state) => ({ convergence: 0 }));
 		this.setState((state) => ({
 			isConvergence: !state.isConvergence,
-			convergence: (state.isConvergence == false && state.convergence == null) ? 0 : state.convergence
+			convergence: 0
 		}));
 	}
 	toggleReactionConfidence = () => {
@@ -88,8 +86,7 @@ class WeightInputPanel extends React.Component {
 		// 	this.setState((state) => ({ reactionConfidence: 0 }));
 		this.setState((state) => ({
 			isReactionConfidence: !state.isReactionConfidence,
-			reactionConfidence: (state.isReactionConfidence == false && state.reactionConfidence == null)
-				 ? 0 : state.reactionConfidence
+			reactionConfidence: 0
 		}));
 	}
 	toggleAssociatedSubtreeConfidence = () => {
@@ -97,9 +94,7 @@ class WeightInputPanel extends React.Component {
 		// 	this.setState((state) => ({ associatedSubtreeConfidence: 0 }));
 		this.setState((state) => ({
 			isAssociatedSubtreeConfidence: !state.isAssociatedSubtreeConfidence,
-			associatedSubtreeConfidence: (state.isAssociatedSubtreeConfidence == false 
-					&& state.associatedSubtreeConfidence == null)
-				? 0 : state.associatedSubtreeConfidence
+			associatedSubtreeConfidence: 0
 		}));
 	}
 
@@ -110,7 +105,7 @@ class WeightInputPanel extends React.Component {
 
 		if (this.state != prevState) {
 
-			// console.log("current state", this.state);
+			console.log("current state", this.state);
 
 			this.props.updateWeightFromPanel(
 				(this.state.isInfluence) ? this.state.influence : null,
@@ -151,15 +146,12 @@ class WeightInputPanel extends React.Component {
 		}
 	}
 
-	componentDidMount() {
-		isMounted = true;
-	}
+
 
 
 	render() {
 
-		const currentWeights = this.props.currentWeights;
-
+		console.log("render weights", this.state);
 
 		const InfluenceInput =
 			<Grid item>
@@ -167,8 +159,10 @@ class WeightInputPanel extends React.Component {
 					label={"Influence"}
 					lowerLimit={0}
 					higherLimit={100}
-					defaultValue={isMounted ? this.state.influence : currentWeights.influence}
+					defaultValue={this.state.influence}
 					callback={this.weightInputCallback}
+					id={1}
+					key={1}
 				/>
 			</Grid>
 
@@ -178,8 +172,10 @@ class WeightInputPanel extends React.Component {
 					label={"Complexity"}
 					lowerLimit={0}
 					higherLimit={100}
-					defaultValue={isMounted ? this.state.complexity : currentWeights.complexity}
+					defaultValue={this.state.complexity}
 					callback={this.weightInputCallback}
+					id={2}
+					key={2}
 				/>
 			</Grid>
 
@@ -189,8 +185,10 @@ class WeightInputPanel extends React.Component {
 					label={"Convergence"}
 					lowerLimit={0}
 					higherLimit={100}
-					defaultValue={isMounted ? this.state.convergence : currentWeights.convergence}
+					defaultValue={this.state.convergence}
 					callback={this.weightInputCallback}
+					id={3}
+					key={3}
 				/>
 			</Grid>
 
@@ -200,8 +198,10 @@ class WeightInputPanel extends React.Component {
 					label={"Reaction Confidence"}
 					lowerLimit={0}
 					higherLimit={100}
-					defaultValue={isMounted ? this.state.reactionConfidence : currentWeights.reactionConfidence}
+					defaultValue={this.state.reactionConfidence}
 					callback={this.weightInputCallback}
+					id={4}
+					key={4}
 				/>
 			</Grid>
 
@@ -211,9 +211,10 @@ class WeightInputPanel extends React.Component {
 					label={"Associated Subtree Confidence"}
 					lowerLimit={0}
 					higherLimit={100}
-					defaultValue={isMounted ? this.state.associatedSubtreeConfidence :
-						 currentWeights.associatedSubtreeConfidence}
+					defaultValue={this.state.associatedSubtreeConfidence}
 					callback={this.weightInputCallback}
+					id={5}
+					key={5}
 				/>
 			</Grid>
 

@@ -33,13 +33,36 @@ $submenu-indent: 0px !default;
 	left: 4px;
 }
 
+.pro-sidebar .pro-menu .pro-menu-item.pro-sub-menu > .pro-inner-item > .pro-arrow-wrapper{
+	top: 20px;
+}
+
 .combo .pro-inner-item .pro-arrow-wrapper{
 	left: 19px;
 }
 
 .failureNode .pro-inner-item .pro-arrow-wrapper{
-	left: 19x;
+	left: 19px;
 }
+
+.pro-sidebar .pro-menu > ul > .pro-sub-menu > .pro-inner-list-item > div > ul{
+	margin: 0px;
+	padding: 0px;
+}
+
+
+.pro-sidebar .pro-menu {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.MuiPaper-outlined{
+	border: none !important;
+}
+
+
+
+
 
 .g6-tooltip {
 	padding: 0px;

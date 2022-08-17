@@ -29,7 +29,7 @@ class ConstraintInput extends
 	constructor(props: { label: string, lowerLimit: number, higherLimit: number, defaultValue: number, callback: any, id:number }) {
 		super(props);
 
-		// console.log("props", props);
+		console.log("props", props);
 
 		this.state = {
 			value: props.defaultValue

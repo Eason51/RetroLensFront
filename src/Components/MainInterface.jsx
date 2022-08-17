@@ -39,7 +39,7 @@ function MainInterface() {
 	const [revisePromise, setRevisePromise] = useState({});
 	const [RetroTreeComponent, setRetroTreeComponent] = useState([]);
 	const [confidence, setConfidence] = useState(-1);
-	const [serverIp, setServerIp] = useState("http://49.234.10.199:5000/");
+	const [serverIp, setServerIp] = useState("http://185.216.119.167:5000/");
 	const [showLoading, setShowLoading] = useState(false);
 	const [showFailureModal, setShowFailureModal] = useState(false);
 
@@ -119,6 +119,7 @@ function MainInterface() {
 		document.getElementById("drawBoard").style.zIndex = -1;
 		document.getElementById("drawBoard").style.visibility = "hidden";
 		document.getElementById("main").style.zIndex = 2;
+		document.getElementById("cancelButton").style.visibility = "hidden";
 	}
 
 	return (
@@ -228,6 +229,7 @@ function MainInterface() {
 													// globalContext.updateTreeData(treeData2);
 													setRetroTreeComponent([<RetroTree constraints={constraints} />]);
 													document.getElementById("drawBoardButton").addEventListener("click", closeDrawBoard);
+													
 
 													// document.getElementById('ifKetcher').contentWindow.ketcher.setMolecule('');
 													window.ketcher.setMolecule('');

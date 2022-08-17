@@ -56,6 +56,9 @@ let moleculePreviousClick = "";
 let previousReviseSelectedNode = null;
 let comboCount = -1;
 
+let graphBeforeEdit = null;
+let cancelButtonClicked = false;
+
 // const [alternativeHighlightArr, setAlternativeHighlightArr] = useState([]);
 
 let alternativeHighlightArr = [];
@@ -109,6 +112,7 @@ const RetroTree = (props) => {
 	const [showWeightInput, setShowWeightInput] = useState(false);
 	const [showLoading, setShowLoading] = useState(false);
 	const [loadingText, setLoadingText] = useState("");
+	const [CancelButtonVisibility, setCancelButtonVisibility] = useState("hidden");
 
 	const [openCandidateMenu, setOpenCandidateMenu] = useState(false);
 	const [openMoleculeMenu, setOpenMoleculeMenu] = useState(false);
@@ -203,6 +207,7 @@ const RetroTree = (props) => {
 
 					setShowLoading(true);
 					setLoadingText("Analysing Reactants");
+					setCancelButtonVisibility("visible");
 
 					fetch(globalContext.serverIp.concat("checkRXN"), {
 						method: "POST",
@@ -217,10 +222,13 @@ const RetroTree = (props) => {
 					}).then((response) =>
 						response.json())
 						.then((responseJson) => {
-							setShowLoading(false);
-							console.log("checkRXN_response", responseJson);
-							globalContext.updateTreeData(responseJson);
-							graph.read(responseJson);
+							if (cancelButtonClicked == false) {
+								setShowLoading(false);
+								setCancelButtonVisibility("hidden");
+								console.log("checkRXN_response", responseJson);
+								globalContext.updateTreeData(responseJson);
+								graph.read(responseJson);
+							}
 						})
 						.catch(err => {
 							console.log("fetching error")
@@ -237,12 +245,23 @@ const RetroTree = (props) => {
 	}
 
 
+	const cancelEdit = () => {
+		document.getElementById("drawBoard").style.zIndex = -1;
+		document.getElementById("drawBoard").style.visibility = "hidden";
+		document.getElementById("main").style.zIndex = 2;
+		document.getElementById("cancelButton").style.visibility = "hidden";
+		globalContext.updateTreeData(graphBeforeEdit);
+		graph.read(graphBeforeEdit);
+	}
+
+
 	const exitEditMolecule = () => {
 		setTimeout(updateEditMoleculeOutput, 200);
 		document.getElementById("editMolecule").style.zIndex = -2;
 		document.getElementById("editMolecule").style.visibility = "hidden";
 		// document.getElementById("drawBoard").style.visibility = "visible";
 		document.getElementById("main").style.zIndex = 1;
+
 	};
 
 	const updateEditMoleculeOutput = () => {
@@ -316,6 +335,8 @@ const RetroTree = (props) => {
 
 	const displayConstraintInputPanel = () => {
 		setShowConstraintInput(true);
+		graphBeforeEdit = JSON.parse(JSON.stringify(graph.cfg.data));
+		cancelButtonClicked = false;
 	}
 
 	const displayWeightInputPanel = () => {
@@ -347,6 +368,9 @@ const RetroTree = (props) => {
 
 			if (name === "deleteButton") {
 
+				graphBeforeEdit = JSON.parse(JSON.stringify(graph.cfg.data));
+				cancelButtonClicked = false;
+
 				if ("children" in model && model.children != null && model.children.length != 0)
 					setModelArr([<DeleteButtonModal model={model}
 						graph={graph} setSideButtonVisibility={setSideButtonVisibility}
@@ -376,6 +400,7 @@ const RetroTree = (props) => {
 					document.getElementById("drawBoard").style.visibility = "visible";
 					document.getElementById("drawBoard").style.zIndex = 2;
 					document.getElementById("main").style.zIndex = -1;
+					document.getElementById("cancelButton").style.visibility = "visible";
 				}
 
 			}
@@ -422,7 +447,7 @@ const RetroTree = (props) => {
 									<div style={{
 										fontFamily: "Roboto",
 										fontSize: "20px", justifyItems: "start",
-										position: "relative", top: "10px",
+										position: "relative", top: "7px",
 									}}>
 										<Text>Alternative {routeCount}</Text>
 
@@ -430,8 +455,8 @@ const RetroTree = (props) => {
 
 									<div style={{
 										fontFamily: "Roboto",
-										fontSize: "12px", justifyItems: "start",
-										position: "relative", top: "10px"
+										fontSize: "14px", justifyItems: "start",
+										position: "relative", top: "7px"
 									}}>
 										<Text>
 											<div>
@@ -505,6 +530,11 @@ const RetroTree = (props) => {
 			else if (name === "container" || name === "molecule") {
 				if ("isAvailable" in model && model.isAvailable == false)
 					return;
+				else if ("notAvailable" in model && model.notAvailable) {
+					model.notAvailable = false;
+					globalContext.updateTreeData(graph.cfg.data);
+					graph.read(graph.cfg.data);
+				}
 				else {
 					model.notAvailable = true;
 					globalContext.updateTreeData(graph.cfg.data);
@@ -529,6 +559,7 @@ const RetroTree = (props) => {
 		// document.getElementById("reviseButton").addEventListener("click", displayReviseMenu);
 		document.getElementById("reviseButton").addEventListener("click", displayWeightInputPanel);
 		document.getElementById("constraintButton").addEventListener("click", displayConstraintInputPanel);
+		document.getElementById("cancelButton").addEventListener("click", cancelEdit);
 
 		const data = globalContext.treeData;
 
@@ -775,8 +806,8 @@ const RetroTree = (props) => {
 					<Row>
 						<div style={{
 							height: rowh * 2, fontSize: "22px", display: "flex",
-							alignContent: "center", alignItems: "center", marginLeft: "40px",
-							color: "black"
+							alignContent: "center", alignItems: "center", marginLeft: "20px",
+							color: "black", fontFamily: "Roboto"
 						}}>
 							AI Generated Route
 						</div>
@@ -874,7 +905,8 @@ const RetroTree = (props) => {
 								<div style={{
 									fontFamily: "Roboto",
 									fontSize: "20px", justifyItems: "start",
-									position: "relative", top: "10px", left: "15px"
+									position: "relative", top: "7px", left: "15px",
+									display: "flex", alignContent: "middle"
 								}}>
 									Revision for All Failed Moelcule
 								</div>
@@ -904,7 +936,7 @@ const RetroTree = (props) => {
 								<div style={{
 									fontFamily: "Roboto",
 									fontSize: "20px", justifyItems: "start",
-									position: "relative", top: "10px", left: "15px"
+									position: "relative", top: "7px", left: "15px"
 								}}>
 									Revision for Each Failed Molecule
 								</div>
@@ -1017,6 +1049,7 @@ const RetroTree = (props) => {
 
 							setShowLoading(true);
 							setLoadingText("Rerun AI Route Planning")
+							setCancelButtonVisibility("visible");
 
 							fetch(globalContext.serverIp.concat("reconfigureConstraints"), {
 								method: "POST",
@@ -1031,10 +1064,12 @@ const RetroTree = (props) => {
 							}).then((response) =>
 								response.json())
 								.then((responseJson) => {
-									setShowLoading(false);
-									console.log("reconfigureConstraints_response", responseJson);
-									globalContext.updateTreeData(responseJson);
-									graph.read(responseJson);
+									if (cancelButtonClicked == false) {
+										setShowLoading(false);
+										console.log("reconfigureConstraints_response", responseJson);
+										globalContext.updateTreeData(responseJson);
+										graph.read(responseJson);
+									}
 								})
 								.catch(err => {
 									console.log("fetching error")
@@ -1161,6 +1196,7 @@ const RetroTree = (props) => {
 								.then((responseJson) => {
 
 									setShowLoading(false);
+									setCancelButtonVisibility("hidden");
 
 									console.log("revise_response", responseJson);
 									let responseGraph = responseJson.graph;
@@ -1180,13 +1216,14 @@ const RetroTree = (props) => {
 
 										let submenuTitle =
 											<div style={{
-												height: "50px", color: "black",
+												height: rowh * 1.3, color: "black",
 												padding: "0px"
 											}}>
 												<div className="comboSubMenu" style={{
 													fontFamily: "Roboto",
 													fontSize: "20px", justifyItems: "start",
-													position: "relative", top: "10px", left: "30px"
+													position: "relative", top: "7px", left: "30px",
+													display: "flex", alignContent: "middle"
 												}}
 												>
 													Option {comboRank} (Score: {comboSawScore.toFixed(3)})
@@ -1210,25 +1247,25 @@ const RetroTree = (props) => {
 													weightRef.current.convergence == null &&
 													weightRef.current.reactionConfidence == null &&
 													weightRef.current.associatedSubtreeConfidence == null) {
-													firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
-													firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
-													secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
-													secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
-													thirdRow.push(<span>associated subtree confidence: {
+													firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
+													firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
+													secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
+													secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
+													thirdRow.push(<span>Associated Subtree Confidence: {
 														node.associatedSubtreeConfidence.toFixed(3)
 													}</span>);
 												}
 												else {
 													if (weightRef.current.influence != null)
-														firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+														firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
 													if (weightRef.current.reactionConfidence != null)
-														firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+														firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
 													if (weightRef.current.complexity != null)
-														secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+														secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
 													if (weightRef.current.convergence != null)
-														secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+														secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
 													if (weightRef.current.associatedSubtreeConfidence != null)
-														thirdRow.push(<span>associated subtree confidence: {
+														thirdRow.push(<span>Associated Subtree Confidence: {
 															node.associatedSubtreeConfidence.toFixed(3)
 														}</span>);
 												}
@@ -1306,15 +1343,24 @@ const RetroTree = (props) => {
 														<DropdownItem
 															id={id}
 															style={{
-																height: "100px", color: "black",
+																height: "110px", color: "black",
 																padding: "0px", backgroundColor: "inherit",
+																display: "flex", justifyContent: "start",
+																alignContent: "middle"
 															}} size="lg">
-															<div style={{ position: "relative", left: "30px" }}>
+															<div style={{
+																position: "relative", left: "30px",
+																display: "flex", flexDirection: "column",
+																justifyContent: "middle",
+																alignContent: "start",
+																padding: "0px"
+															}}>
 
 																<div style={{
 																	fontFamily: "Roboto",
 																	fontSize: "20px", justifyItems: "start",
-																	position: "relative", top: "10px", left: "10px"
+																	position: "relative", left: "15px",
+																	top: "7px"
 																}}>
 																	<Text>Reaction {nodeCount} (Score: {node.SAW.toFixed(3)})</Text>
 
@@ -1322,8 +1368,9 @@ const RetroTree = (props) => {
 
 																<div style={{
 																	fontFamily: "Roboto",
-																	fontSize: "12px", justifyItems: "start",
-																	position: "relative", top: "10px", left: "10px"
+																	fontSize: "14px", justifyItems: "start",
+																	position: "relative", left: "15.5px",
+																	paddingBottom: "2%", top: "5px"
 																}}>
 																	<Text>
 																		<div>
@@ -1514,25 +1561,25 @@ const RetroTree = (props) => {
 															weightRef.current.convergence == null &&
 															weightRef.current.reactionConfidence == null &&
 															weightRef.current.associatedSubtreeConfidence == null) {
-															firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
-															firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
-															secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
-															secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
-															thirdRow.push(<span>associated subtree confidence: {
+															firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
+															firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
+															secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
+															secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
+															thirdRow.push(<span>Associated Subtree Confidence: {
 																node.associatedSubtreeConfidence.toFixed(3)
 															}</span>);
 														}
 														else {
 															if (weightRef.current.influence != null)
-																firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
+																firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
 															if (weightRef.current.reactionConfidence != null)
-																firstRow.push(<span>reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
+																firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
 															if (weightRef.current.complexity != null)
-																secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
+																secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
 															if (weightRef.current.convergence != null)
-																secondRow.push(<span>convergence: {node.convergence.toFixed(3)}</span>);
+																secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
 															if (weightRef.current.associatedSubtreeConfidence != null)
-																thirdRow.push(<span>associated subtree confidence: {
+																thirdRow.push(<span>Associated Subtree Confidence: {
 																	node.associatedSubtreeConfidence.toFixed(3)
 																}</span>);
 														}
@@ -1602,15 +1649,23 @@ const RetroTree = (props) => {
 																<DropdownItem
 																	id={id}
 																	style={{
-																		height: "100px", color: "black",
-																		padding: "0px", backgroundColor: "inherit"
+																		height: "110px", color: "black",
+																		padding: "0px", backgroundColor: "inherit",
+																		display: "flex", justifyContent: "start",
+																		alignContent: "middle"
 																	}} size="lg">
-																	<div style={{position: "relative", left: "30px"}}>
+																	<div style={{
+																		position: "relative", left: "30px",
+																		display: "flex", flexDirection: "column",
+																		justifyContent: "middle",
+																		alignContent: "start",
+																		padding: "0px"
+																	}}>
 
 																		<div style={{
 																			fontFamily: "Roboto",
 																			fontSize: "20px", justifyItems: "start",
-																			position: "relative", top: "10px", left: "10px"
+																			position: "relative", top: "7px", left: "15px"
 																		}}>
 																			<Text>Reaction {reactionIndex + 1} (Score: {node.SAW.toFixed(3)})</Text>
 
@@ -1618,8 +1673,9 @@ const RetroTree = (props) => {
 
 																		<div style={{
 																			fontFamily: "Roboto",
-																			fontSize: "12px", justifyItems: "start",
-																			position: "relative", top: "10px", left: "10px"
+																			fontSize: "14px", justifyItems: "start",
+																			position: "relative", left: "15.5px",
+																			paddingBottom: "2%", top: "5px"
 																		}}>
 																			<Text>
 																				<div>
@@ -1660,13 +1716,13 @@ const RetroTree = (props) => {
 
 												let submenuTitle =
 													<div style={{
-														height: "50px", color: "black",
+														height: rowh * 1.3, color: "black",
 														padding: "0px"
 													}}>
 														<div className="comboSubMenu" style={{
 															fontFamily: "Roboto",
 															fontSize: "20px", justifyItems: "start",
-															position: "relative", top: "10px", left: "30px"
+															position: "relative", top: "7px", left: "30px"
 														}}
 														>
 															Failed Molecule {failureNodeCount}
@@ -1775,135 +1831,135 @@ const RetroTree = (props) => {
 
 
 
-									// setReviseList([]);
-									// tempReviseList = [];
-									G6.Util.traverseTree(graph.cfg.data,
-										(node) => {
-											if ("rank" in node && node.rank > 0) {
+									// // setReviseList([]);
+									// // tempReviseList = [];
+									// G6.Util.traverseTree(graph.cfg.data,
+									// 	(node) => {
+									// 		if ("rank" in node && node.rank > 0) {
 
-												const id = "selectedRoute" + node.rank;
+									// 			const id = "selectedRoute" + node.rank;
 
-												let firstRow = [];
-												let secondRow = [];
-												let thirdRow = [];
-												if (weightRef.current.influence == null &&
-													weightRef.current.complexity == null &&
-													weightRef.current.convergence == null &&
-													weightRef.current.reactionConfidence == null &&
-													weightRef.current.associatedSubtreeConfidence == null) {
-													firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
-													firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
-													secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
-													secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
-													thirdRow.push(<span>associated subtree confidence: {
-														node.associatedSubtreeConfidence.toFixed(3)
-													}</span>);
-												}
-												else {
-													if (weightRef.current.influence != null)
-														firstRow.push(<span>influence: {node.normalizedInfluence.toFixed(3)} </span>);
-													if (weightRef.current.reactionConfidence != null)
-														firstRow.push(<span>{'\u00A0'}{'\u00A0'}reaction confidence: {node.reactionConfidence.toFixed(3)} </span>);
-													if (weightRef.current.complexity != null)
-														secondRow.push(<span>complexity: {node.complexity.toFixed(3)} </span>);
-													if (weightRef.current.convergence != null)
-														secondRow.push(<span>{'\u00A0'}{'\u00A0'}convergence: {node.convergence.toFixed(3)}</span>);
-													if (weightRef.current.associatedSubtreeConfidence != null)
-														thirdRow.push(<span>associated subtree confidence: {
-															node.associatedSubtreeConfidence.toFixed(3)
-														}</span>);
-												}
-
-
-												tempReviseList.push(
-													[parseInt(node.rank),
-													<MenuItem
-														// style={{
-														// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
-														// }}	
-														onClick={
-															(e) => {
+									// 			let firstRow = [];
+									// 			let secondRow = [];
+									// 			let thirdRow = [];
+									// 			if (weightRef.current.influence == null &&
+									// 				weightRef.current.complexity == null &&
+									// 				weightRef.current.convergence == null &&
+									// 				weightRef.current.reactionConfidence == null &&
+									// 				weightRef.current.associatedSubtreeConfidence == null) {
+									// 				firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
+									// 				firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
+									// 				secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
+									// 				secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
+									// 				thirdRow.push(<span>Associated Subtree Confidence: {
+									// 					node.associatedSubtreeConfidence.toFixed(3)
+									// 				}</span>);
+									// 			}
+									// 			else {
+									// 				if (weightRef.current.influence != null)
+									// 					firstRow.push(<span>Influence: {node.normalizedInfluence.toFixed(3)} </span>);
+									// 				if (weightRef.current.reactionConfidence != null)
+									// 					firstRow.push(<span>{'\u00A0'}{'\u00A0'}Reaction Confidence: {node.reactionConfidence.toFixed(3)} </span>);
+									// 				if (weightRef.current.complexity != null)
+									// 					secondRow.push(<span>Complexity: {node.complexity.toFixed(3)} </span>);
+									// 				if (weightRef.current.convergence != null)
+									// 					secondRow.push(<span>{'\u00A0'}{'\u00A0'}Convergence: {node.convergence.toFixed(3)}</span>);
+									// 				if (weightRef.current.associatedSubtreeConfidence != null)
+									// 					thirdRow.push(<span>Associated Subtree Confidence: {
+									// 						node.associatedSubtreeConfidence.toFixed(3)
+									// 					}</span>);
+									// 			}
 
 
-																if (previousReviseSelectedNode != null) {
-																	document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
-																		.style.backgroundColor = "#f4f5f7";
-																}
+									// 			tempReviseList.push(
+									// 				[parseInt(node.rank),
+									// 				<MenuItem
+									// 					// style={{
+									// 					// 	backgroundColor: node.reviseSelected ? "#e9ecef" : ""
+									// 					// }}	
+									// 					onClick={
+									// 						(e) => {
+
+
+									// 							if (previousReviseSelectedNode != null) {
+									// 								document.getElementById("selectedRoute" + previousReviseSelectedNode.rank)
+									// 									.style.backgroundColor = "#f4f5f7";
+									// 							}
 
 
 
-																// console.log("selectedRoute", document.getElementById("selectedRoute" + node.rank));
-																document.getElementById("selectedRoute" + node.rank)
-																	.style.backgroundColor = "#e9ecef";
+									// 							// console.log("selectedRoute", document.getElementById("selectedRoute" + node.rank));
+									// 							document.getElementById("selectedRoute" + node.rank)
+									// 								.style.backgroundColor = "#e9ecef";
 
-																previousReviseSelectedNode = node;
+									// 							previousReviseSelectedNode = node;
 
-																G6.Util.traverseTree(graph.cfg.data,
-																	(innerNode) => {
-																		if ("reviseSelected" in innerNode
-																			&& innerNode.reviseSelected == true) {
-																			innerNode.reviseSelected = false
-																		}
-																	}
-																);
+									// 							G6.Util.traverseTree(graph.cfg.data,
+									// 								(innerNode) => {
+									// 									if ("reviseSelected" in innerNode
+									// 										&& innerNode.reviseSelected == true) {
+									// 										innerNode.reviseSelected = false
+									// 									}
+									// 								}
+									// 							);
 
-																node.reviseSelected = true;
-																globalContext.updateTreeData(graph.cfg.data);
-																graph.read(graph.cfg.data);
-															}
-														}
-													>
+									// 							node.reviseSelected = true;
+									// 							globalContext.updateTreeData(graph.cfg.data);
+									// 							graph.read(graph.cfg.data);
+									// 						}
+									// 					}
+									// 				>
 
-														<DropdownItem
-															id={id}
-															style={{
-																height: "100px", color: "black",
-																padding: "0px"
-															}} size="lg">
+									// 					<DropdownItem
+									// 						id={id}
+									// 						style={{
+									// 							height: "100px", color: "black",
+									// 							padding: "0px"
+									// 						}} size="lg">
 
-															<div style={{
-																fontFamily: "Roboto",
-																fontSize: "20px", justifyItems: "start",
-																position: "relative", top: "10px", left: "10px"
-															}}>
-																<Text>Option {node.rank} (Score: {node.SAW.toFixed(3)})</Text>
+									// 						<div style={{
+									// 							fontFamily: "Roboto",
+									// 							fontSize: "20px", justifyItems: "start",
+									// 							position: "relative", top: "10px", left: "10px"
+									// 						}}>
+									// 							<Text>Option {node.rank} (Score: {node.SAW.toFixed(3)})</Text>
 
-															</div>
+									// 						</div>
 
-															<div style={{
-																fontFamily: "Roboto",
-																fontSize: "12px", justifyItems: "start",
-																position: "relative", top: "10px", left: "10px"
-															}}>
-																<Text>
-																	<div>
-																		{firstRow}
-																	</div>
-																	<div>
-																		{secondRow}
-																	</div>
-																	<div>
-																		{thirdRow}
-																	</div>
+									// 						<div style={{
+									// 							fontFamily: "Roboto",
+									// 							fontSize: "14px", justifyItems: "start",
+									// 							position: "relative", top: "10px", left: "10px"
+									// 						}}>
+									// 							<Text>
+									// 								<div>
+									// 									{firstRow}
+									// 								</div>
+									// 								<div>
+									// 									{secondRow}
+									// 								</div>
+									// 								<div>
+									// 									{thirdRow}
+									// 								</div>
 
-																</Text>
+									// 							</Text>
 
-															</div>
+									// 						</div>
 
 
-														</DropdownItem>
+									// 					</DropdownItem>
 
-													</MenuItem>
-													]
-												);
-											}
-										});
-									// tempReviseList.sort();
-									// let tempReviseList2 = [];
-									// tempReviseList.forEach(([rank, component]) => {
-									// 	tempReviseList2.push(component);
-									// })
-									// setReviseList(tempReviseList2);
+									// 				</MenuItem>
+									// 				]
+									// 			);
+									// 		}
+									// 	});
+									// // tempReviseList.sort();
+									// // let tempReviseList2 = [];
+									// // tempReviseList.forEach(([rank, component]) => {
+									// // 	tempReviseList2.push(component);
+									// // })
+									// // setReviseList(tempReviseList2);
 								})
 								.catch(err => {
 									console.log("fetching error")
@@ -1918,6 +1974,7 @@ const RetroTree = (props) => {
 				</div>
 			</Modal>
 
+			{/* showLoading */}
 			<Modal id="modal" show={showLoading} centered size="lg">
 				<div style={{ height: "200px", textAlign: "center", padding: "0px", margin: "0px" }}>
 					<div style={{
@@ -1945,9 +2002,25 @@ const RetroTree = (props) => {
 						loadingIndicator={<CircularProgress color="inherit" size={50} />}
 					>
 					</LoadingButton>
+					<Button style={{
+						width: "100%", height: "35%",
+						border: "none", backgroundColor: "rgb(213, 213, 213)",
+						color: "blue", visibility: CancelButtonVisibility,
+						fontSize: "large"
+					}}
+						onClick={(e) => {
+							setShowLoading(false);
+							setCancelButtonVisibility("hidden");
+							cancelButtonClicked = true;
+							globalContext.updateTreeData(graphBeforeEdit);
+							graph.read(graphBeforeEdit);
+						}}>
+						Cancel
+					</Button>
 
 				</div>
 			</Modal>
+
 
 		</div>
 	);
@@ -1958,10 +2031,10 @@ const styles = StyleSheet.create({
 	container: {
 	},
 	scrollView: {
-		maxHeight: rowh * 13.4
+		maxHeight: rowh * 14.25
 	},
 	routeView: {
-		maxHeight: rowh * 16.3
+		maxHeight: rowh * 16.9
 	}
 });
 
