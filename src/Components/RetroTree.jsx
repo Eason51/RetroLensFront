@@ -557,7 +557,8 @@ const RetroTree = (props) => {
 		document.getElementById("drawBoardButton").addEventListener("click", exitDrawBoard);
 		// document.getElementById("editMoleculeButton").addEventListener("click", exitEditMolecule);
 		// document.getElementById("reviseButton").addEventListener("click", displayReviseMenu);
-		document.getElementById("reviseButton").addEventListener("click", displayWeightInputPanel);
+		if(document.getElementById("reviseButton") != null)
+			document.getElementById("reviseButton").addEventListener("click", displayWeightInputPanel);
 		document.getElementById("constraintButton").addEventListener("click", displayConstraintInputPanel);
 		document.getElementById("cancelButton").addEventListener("click", cancelEdit);
 

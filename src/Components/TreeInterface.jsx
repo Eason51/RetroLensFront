@@ -69,7 +69,7 @@ function TreeInterface(props) {
 							}}>
 								Confidence: {confidence}
 							</div> */}
-							<Button id="reviseButton"
+							{/* <Button id="reviseButton"
 								variant='contained' size='large'
 								style={{ position: "absolute", left: "78%", fontSize: "1vm"}}
 								onClick={() => {
@@ -86,11 +86,11 @@ function TreeInterface(props) {
 								}}
 							>
 								edit retrosynthetic routes
-							</Button>
+							</Button> */}
 
 							<Button id="constraintButton"
 								variant='contained' size='large'
-								style={{ position: "absolute", left: "64%", fontSize: "1vm" }}
+								style={{ position: "absolute", left: "80%", fontSize: "1vm" }}
 							>
 								edit constraints
 							</Button>
